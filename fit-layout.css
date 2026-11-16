@@ -83,3 +83,75 @@ header{position:sticky!important;top:0;z-index:50;min-height:64px;padding:14px 3
 @media(max-width:540px){#lab .native-quiz h2{font-size:17px!important}#lab .native-quiz .trace-choice strong{font-size:13.5px;max-width:76%}}
 #lab.portrait-view .portrait-variant-action{margin:20px 0 24px;padding:0 16px}
 @media(max-width:540px){#lab.portrait-view .portrait-variant-action{margin:16px 0 20px;padding:0 10px}}
+/* A section identifier above a distinct, explicitly named artwork title. */
+#lab.portrait-view .lab-heading{min-height:39px;padding:0 245px 10px 0;margin-bottom:14px;border-bottom:1px solid #30424c;align-items:center}
+#lab.portrait-view .lab-heading>div>.eyebrow{display:none}
+#lab.portrait-view .lab-heading h1{font-size:16px;line-height:1.4;letter-spacing:.04em;margin:0;font-weight:400}
+#lab.portrait-view .portrait-tabs{top:0}
+#lab.portrait-view .portrait-result{display:flex!important;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;min-height:0;height:auto;margin:0 0 15px!important;padding:0;border:0;width:100%;max-width:none}
+#lab.portrait-view .portrait-identity{text-align:center;min-width:0;padding:8px 16px 18px}
+#lab.portrait-view .portrait-name-label{display:block;color:#9bb5c2;font-family:var(--typewriter);font-size:9px;line-height:1.4;letter-spacing:.14em;margin-bottom:8px}
+#lab.portrait-view .portrait-result .portrait-name{font-family:'Synchronos Hand','X Typewriter',var(--typewriter);font-size:clamp(24px,2.6vw,32px);font-weight:400;line-height:1.3;letter-spacing:0;max-width:100%;margin:0;text-wrap:balance;overflow-wrap:break-word;color:#edf6fa}
+#lab.portrait-view .portrait-result .portrait-description{font-family:var(--typewriter);font-size:10px;line-height:1.5;color:#96afbb;margin:9px 0 0}
+#lab.portrait-view .portrait-result-controls{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0;border-top:1px solid #233a46;border-bottom:1px solid #233a46}
+#lab.portrait-view .portrait-result-controls .pattern-overlap{margin:0;width:255px;max-width:45%;flex:none;gap:11px}
+#lab.portrait-view .portrait-result-controls .portrait-tools{display:flex;flex-direction:row;justify-content:flex-end;gap:6px;margin:0;width:auto;flex-wrap:nowrap}
+#lab.portrait-view .portrait-result-controls .portrait-tools button{flex:none;min-height:28px;padding:7px 10px;font-size:8px}
+#lab.portrait-view .lab-workspace{height:var(--result-workspace-height,calc(var(--portrait-height) - 155px));min-height:170px}
+@media(max-width:700px){#lab.portrait-view .portrait-name-label{font-size:8px}#lab.portrait-view .portrait-identity{padding:8px 12px 16px}#lab.portrait-view .portrait-result .portrait-name{font-size:27px}#lab.portrait-view .portrait-result-controls{gap:12px}#lab.portrait-view .portrait-result-controls .pattern-overlap{width:220px}#lab.portrait-view .portrait-result-controls .portrait-tools button{font-size:7px;padding:7px 8px}}
+@media(max-width:600px){#lab.portrait-view .portrait-result-controls{flex-direction:column;align-items:stretch;gap:10px;padding:11px 0}#lab.portrait-view .portrait-result-controls .pattern-overlap{width:100%;max-width:none}#lab.portrait-view .portrait-result-controls .portrait-tools{justify-content:stretch;width:100%}#lab.portrait-view .portrait-result-controls .portrait-tools button{flex:1}}
+@media(max-width:540px){#lab.portrait-view .lab-heading{min-height:72px;padding:0 0 36px;margin-bottom:13px}#lab.portrait-view .lab-heading h1{font-size:14px}#lab.portrait-view .portrait-tabs{top:auto;bottom:0}#lab.portrait-view .portrait-result .portrait-name{font-size:24px}#lab.portrait-view .portrait-result .portrait-description{font-size:9px}#lab.portrait-view .portrait-identity{padding:4px 6px 14px}#lab.portrait-view .portrait-result{margin-bottom:12px!important}}
+/* Keep the editor action attached to the artwork's own lower edge. */
+.portrait-canvas-footer{flex:none;width:100%;min-width:0}
+#lab.portrait-view .portrait-canvas-footer{display:flex;align-items:center;justify-content:space-between;width:var(--art-width,100%);max-width:100%;gap:14px;margin:12px 0 24px}
+#lab.portrait-view .portrait-canvas-footer>.stage-meta{flex:1;min-width:0;width:auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;min-height:28px;padding:0;border:0;font-size:7px!important;line-height:1.4}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action{display:flex;flex:0 0 auto;width:auto;margin:0;padding:0}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:220px;min-height:47px;padding:12px 16px;font-size:11px;letter-spacing:.02em}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button span:last-child{font-size:21px}
+@media(max-width:540px){#lab.portrait-view .portrait-canvas-footer{flex-direction:column;align-items:stretch;gap:10px;margin:10px 0 20px}#lab.portrait-view .portrait-canvas-footer>.stage-meta{flex:none;flex-direction:row;justify-content:space-between;gap:8px;width:100%;font-size:6px!important}#lab.portrait-view .portrait-canvas-footer .portrait-variant-action{justify-content:flex-end;width:100%}#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:min(100%,240px);min-height:44px;font-size:10px}}
+.portrait-control-dock{display:none}
+#lab.portrait-view .portrait-control-dock{display:block;flex:none;width:var(--art-width,100%);max-width:100%;margin:9px 0 0}
+#lab.portrait-view .portrait-control-dock .portrait-result-controls{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:space-between;gap:9px 14px;padding:10px 0}
+#lab.portrait-view .portrait-control-dock .pattern-overlap{flex:1 1 145px;min-width:0;width:auto;max-width:none;margin:0;font-size:8px;gap:8px}
+#lab.portrait-view .portrait-control-dock .pattern-overlap input{min-width:45px}
+#lab.portrait-view .portrait-control-dock .portrait-tools{flex:0 0 auto;width:auto;justify-content:flex-end;flex-wrap:nowrap;margin:0;gap:5px}
+#lab.portrait-view .portrait-control-dock .portrait-tools button{flex:none;padding:7px 8px;font-size:7px}
+@media(max-width:540px){#lab.portrait-view .portrait-control-dock .pattern-overlap{flex-basis:100%}#lab.portrait-view .portrait-control-dock .portrait-tools{width:100%}#lab.portrait-view .portrait-control-dock .portrait-tools button{flex:1}}
+#lab.portrait-view .lab-viewer>.stage-meta{display:none}
+#lab.portrait-view .portrait-control-dock .pattern-overlap{flex-basis:118px}
+#lab.portrait-view .portrait-control-dock .pattern-overlap input{min-width:35px}
+@media(max-width:540px){#lab.portrait-view .portrait-control-dock .pattern-overlap{flex-basis:100%}}
+#lab.portrait-view .lab-workspace{grid-template-columns:minmax(0,1fr)}
+#lab.portrait-view .lab-viewer{width:100%;max-width:100%}
+/* Decoded images reveal together; their ink/hover state remains independent. */
+.stamp-visual{position:absolute;inset:0;z-index:-1;pointer-events:none;animation:stamp-soft-reveal .22s ease-out both}
+@keyframes stamp-soft-reveal{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.stamp-visual{animation:none}}
+/* One centered, proportionate poster; hover reveals a true image magnifier. */
+.poster-view{position:relative;display:grid!important;place-items:center;gap:0;padding:18px;height:var(--reader-height);overflow:hidden}
+.poster-view>img{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;object-fit:contain;margin:0;box-shadow:none;cursor:crosshair}
+.poster-lens{position:absolute;width:clamp(130px,16vw,200px);height:clamp(130px,16vw,200px);border-radius:50%;border:1px solid #b3ddeb;box-shadow:0 6px 24px #0009,0 0 0 2px #06131c80;background-color:#071219;background-repeat:no-repeat;pointer-events:none;z-index:4}
+.poster-lens[hidden]{display:none!important}.poster-lens::after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;border:1px solid #ec008c;border-radius:50%;transform:translate(-50%,-50%)}
+@media(max-width:540px){.poster-view{padding:12px}.poster-lens{width:130px;height:130px}}
+/* Clear result identity with its primary action kept independently at top right. */
+#lab.portrait-view .portrait-identity{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:28px;text-align:left;padding:12px 0 17px}
+#lab.portrait-view .portrait-name-block{min-width:0}
+#lab.portrait-view .portrait-result .portrait-name{font-size:clamp(24px,2.4vw,30px);line-height:1.28}
+#lab.portrait-view .portrait-name-label{font-size:9px;margin-bottom:7px}
+#lab.portrait-view .portrait-primary-action-slot{display:flex;align-items:center;justify-content:flex-end}
+#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action{display:flex;flex:none;width:auto;margin:0;padding:0}
+#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{width:210px;min-height:48px;padding:12px 17px;font-size:11px}
+#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button span:last-child{font-size:20px}
+#lab.portrait-view .portrait-canvas-footer{margin:8px 0 15px}
+#lab.portrait-view .portrait-canvas-footer>.stage-meta{flex-direction:row;justify-content:space-between;align-items:center;width:100%;min-height:18px;font-size:7px!important}
+#lab.portrait-view .portrait-control-dock .portrait-result-controls{gap:10px 14px;padding:11px 0}
+#lab.portrait-view .portrait-control-dock .pattern-overlap{flex:1 1 155px;min-height:18px;font-size:9px}
+#lab.portrait-view .portrait-control-dock .portrait-tools{flex:1 1 280px;justify-content:space-between;width:auto;gap:6px}
+#lab.portrait-view .portrait-control-dock .portrait-tools button{flex:1;min-height:35px;padding:9px 11px;font-size:10px}
+#patternOverlap{--range-thumb-size:8px;height:2px!important;padding:0}
+#patternOverlap::-webkit-slider-thumb{width:8px;height:8px}
+#patternOverlap::-moz-range-thumb{width:8px;height:8px}
+.poster-view{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.poster-view>img{width:var(--poster-width,auto)!important;height:var(--poster-height,100%)!important;min-width:0;min-height:0}
+@media(max-width:700px){#lab.portrait-view .portrait-identity{gap:20px}#lab.portrait-view .portrait-result .portrait-name{font-size:25px}#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{width:185px;min-height:45px;font-size:10px}#lab.portrait-view .portrait-control-dock .portrait-tools button{font-size:9px;min-height:33px}}
+@media(max-width:540px){#lab.portrait-view .portrait-identity{grid-template-columns:1fr;gap:12px;padding:7px 0 14px}#lab.portrait-view .portrait-result .portrait-name{font-size:24px}#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{width:190px;min-height:42px}#lab.portrait-view .portrait-control-dock .pattern-overlap{flex-basis:100%}#lab.portrait-view .portrait-control-dock .portrait-tools{flex-basis:100%}#lab.portrait-view .portrait-control-dock .portrait-tools button{font-size:9px;min-height:32px;padding:8px}#lab.portrait-view .portrait-canvas-footer{margin:8px 0 14px}}

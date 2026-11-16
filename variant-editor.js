@@ -1,7 +1,7 @@
 /* Independent vector objects; each library canvas remembers its own arrangement. */
 window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  const scenes=new Map();let current='17',selected=null,serial=0,drag=null,portraitKey='';
- const $=id=>document.getElementById(id),art=n=>`assets/vectors/graphic-${String(n).padStart(2,'0')}.svg`;
+ const $=id=>document.getElementById(id),art=n=>`assets/vectors/graphic-${String(n).padStart(2,'0')}${n<=10?'-stamp':''}.svg`;
  const title=n=>(n==='portrait'?'MY PORTRAIT':names[n]||(n>=6&&n<=10?names[n-5]+' / VARIATION':'GRAPHIC '+n)).toUpperCase();
  function makeObject(source,props={}){const o={id:++serial,source:+source,x:700,y:550,baseSize:780,scale:100,angle:0,front:'#ec008c',back:'#00aeef',frontStyle:'line',backStyle:'fill',offset:18,copies:1,opacity:100,...props};o.initial={...o};return o}
  function initialScene(source){return{objects:[makeObject(source)],width:1400,height:1100}}
@@ -13,7 +13,7 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  $('objectOptions').prepend(panel.querySelector('.impressions-row'));
  const props=['front','back','frontStyle','backStyle','offset','scale','angle','opacity'];
  function sync(){const o=active();$('nativeSource').value=current;$('objectOptions').disabled=!o;$('nativeReset').disabled=!o;$('selectedObjectTitle').textContent=o?'SELECTED '+String(scene().objects.indexOf(o)+1).padStart(2,'0')+' / '+title(o.source):'SELECT A GRAPHIC';$('objectCount').textContent=scene().objects.length;
-  for(const key of props){const el=$('native'+key[0].toUpperCase()+key.slice(1));if(o)el.value=o[key]}
+  for(const key of props){const el=$('native'+key[0].toUpperCase()+key.slice(1));if(o)el.value=o[key];if(el.type==='range')syncRangeFill(el)}
   $('nativeBack').disabled=!o||o.backStyle==='off';$('nativeOffset').disabled=!o||o.backStyle==='off';
   if(o){$('nativeOffsetValue').textContent=o.offset;$('nativeScaleValue').textContent=o.scale+'%';$('nativeAngleValue').textContent=Math.round(o.angle)+'°';$('nativeOpacityValue').textContent=o.opacity+'%';$('nativeCopies').textContent=o.copies;$('copiesMinus').disabled=o.copies<=1;$('copiesPlus').disabled=o.copies>=8}
   const list=$('objectList');list.replaceChildren();scene().objects.forEach((item,i)=>{const b=document.createElement('button');b.type='button';b.className='object-chip';b.setAttribute('aria-pressed',String(item.id===selected));b.setAttribute('aria-label',`Select graphic ${i+1}: ${title(item.source)}`);b.innerHTML=`<img src="${art(item.source)}" alt=""><span>${String(i+1).padStart(2,'0')}</span>`;b.onclick=()=>{selected=item.id;sync();redraw()};list.append(b)})
@@ -28,7 +28,7 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  $('objectRemove').onclick=()=>{const a=scene().objects,i=a.findIndex(o=>o.id===selected);if(i>=0){a.splice(i,1);selected=a[Math.min(i,a.length-1)]?.id||null;sync();redraw()}};
  $('nativeShuffle').onclick=()=>{const o=active();if(!o)return;const pairs=[['#ec008c','#00aeef'],['#ff493e','#258fff'],['#ffffff','#ec008c'],['#c8ff35','#8e61ff'],['#ff8a25','#00bfa4']],p=pairs[Math.floor(Math.random()*pairs.length)];o.front=p[0];o.back=p[1];sync();redraw()};
  $('nativeSave').onclick=()=>$('save').click();$('addGraphic').onclick=()=>{$('graphicLibrary').hidden=!$('graphicLibrary').hidden};$('closeLibrary').onclick=()=>$('graphicLibrary').hidden=true;
- for(let n=1;n<=17;n++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Add '+numbered(n));b.innerHTML=`<img src="${art(n)}" alt=""><span>${numbered(n)}</span>`;b.onclick=()=>{const s=scene(),i=s.objects.length,o=makeObject(n,{x:s.width/2+((i%3)-1)*70,y:s.height/2+((i%2)*2-1)*45,baseSize:440,frontStyle:'native',backStyle:'off',front:i%2?'#ec008c':'#00aeef'});s.objects.push(o);selected=o.id;$('graphicLibrary').hidden=true;sync();redraw()};$('graphicLibraryItems').append(b)}
+ for(let n=1;n<=17;n++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Add '+numbered(n));b.innerHTML=`<img src="${art(n)}" alt="" loading="lazy" decoding="async"><span>${numbered(n)}</span>`;b.onclick=()=>{const s=scene(),i=s.objects.length,o=makeObject(n,{x:s.width/2+((i%3)-1)*70,y:s.height/2+((i%2)*2-1)*45,baseSize:440,frontStyle:'native',backStyle:'off',front:i%2?'#ec008c':'#00aeef'});s.objects.push(o);selected=o.id;$('graphicLibrary').hidden=true;sync();redraw()};$('graphicLibraryItems').append(b)}
  function objectElements(o){const list=[],size=o.baseSize*o.scale/100,rotation=o.angle*Math.PI/180;for(let i=0;i<o.copies;i++){const pair=n=>n<=5?n+5:n<=10?n-5:n,primary=i%2?pair(o.source):o.source;const sx=(i-(o.copies-1)/2)*size*.42,sy=o.copies===1?0:i%2?size*.035:-size*.035,x=o.x+sx*Math.cos(rotation)-sy*Math.sin(rotation),y=o.y+sx*Math.sin(rotation)+sy*Math.cos(rotation);
   if(o.backStyle!=='off')list.push({objectId:o.id,id:pair(primary),x:x+o.offset,y:y+o.offset*.4,size,colour:o.back,style:o.backStyle,alpha:o.opacity/100,angle:rotation});
   list.push({objectId:o.id,id:primary,x:x-(o.backStyle==='off'?0:o.offset),y:y-(o.backStyle==='off'?0:o.offset*.4),size,colour:o.front,style:o.frontStyle,alpha:o.opacity/100,angle:rotation,minStroke:.72});
