@@ -81,3 +81,5 @@ header{position:sticky!important;top:0;z-index:50;min-height:64px;padding:14px 3
 #lab .native-quiz .trace-choice strong{font-size:clamp(14px,1.35vw,19px);max-width:72%;line-height:1.42;text-wrap:balance}
 @media(max-width:700px){#lab .native-quiz .trace-choice strong{font-size:14px}}
 @media(max-width:540px){#lab .native-quiz h2{font-size:17px!important}#lab .native-quiz .trace-choice strong{font-size:13.5px;max-width:76%}}
+#lab.portrait-view .portrait-variant-action{margin:20px 0 24px;padding:0 16px}
+@media(max-width:540px){#lab.portrait-view .portrait-variant-action{margin:16px 0 20px;padding:0 10px}}
