@@ -1,0 +1,4 @@
+Requested installed Regular faces exported as WOFF, without changing embedding permissions.
+American Typewriter Regular: source /System/Library/Fonts/Supplemental/AmericanTypewriter.ttc, face AmericanTypewriter; OS/2 fsType=4 (Preview & Print embedding).
+X Typewriter Regular: source XTypewriter-Regular.ttf; OS/2 fsType=0.
+These technical embedding flags are not a grant of a webfont redistribution licence. Original vendor licence terms apply.
