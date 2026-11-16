@@ -300,3 +300,7 @@ header{position:sticky!important;top:0;z-index:50;min-height:64px;padding:14px 3
 @media(max-width:1099px){body:has(#lab.portrait-view:not([hidden])) main{min-height:calc(100svh - var(--header-height,68px) - var(--page-footer-height,28px));box-sizing:border-box}}
 /* The result artwork and its surrounding page share true black. */
 body:has(#lab.portrait-view:not([hidden])),body:has(#lab.portrait-view:not([hidden])) main,#lab.portrait-view,#lab.portrait-view .lab-canvas-area,#lab.portrait-view .lab-canvas-area canvas{background:#000000!important}
+/* PNG export stays available at the top of the independently scrolling panel. */
+#lab .native-controls>.native-actions{position:sticky;top:0;z-index:12;margin:0 0 14px!important;padding:8px 0 12px!important;border-top:0;background:#050709;display:block}
+#lab .native-controls>.native-actions #nativeSave{display:block;width:100%;min-height:38px;font-size:11px}
+.book-toolbar[hidden]{display:none!important}

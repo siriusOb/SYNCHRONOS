@@ -5,6 +5,7 @@
  async function prepare(direction){
   if(busy||spread+direction<0||spread+direction>20)return null;
   busy=true;const original=spread,old=spreadPages(spread),next=spreadPages(spread+direction);
+  await window.prepareBookPages?.([...new Set([...old,...next].filter(Boolean))]);
   await Promise.all(next.filter(Boolean).map(n=>{const im=new Image();im.src=pageURL(n);return im.decode().catch(()=>{})}));
   const front=direction>0?old[1]:old[0],back=direction>0?next[0]:next[1],width=book.getBoundingClientRect().width/2,segments=44,step=width/segments;
   paintImage('leftPage',direction>0?old[0]:next[0]);paintImage('rightPage',direction>0?next[1]:old[1]);
