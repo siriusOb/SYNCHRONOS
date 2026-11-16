@@ -17,3 +17,9 @@ Questionnaire: user-supplied parchment PNG, no four-human watermark. X Typewrite
 Fonts: Regular WOFF files for American Typewriter and X Typewriter are bundled under assets/fonts and referenced before local fallbacks. Original font licensing terms apply to public distribution; see assets/fonts/FONT-NOTICE.txt. Korean original text uses system sans-serif fallbacks. Original book typography remains in its page images.
 
 Paper texture on book leaves: Natural Paper by Mihaela Hinayon via Subtle Patterns / Transparent Textures. Separate low-opacity overlay; original 700 x 1400 book images are unfiltered. See assets/TEXTURE-CREDITS.txt.
+
+RESULT SHORTCUT: PORTRAIT VARIANT opens the completed result directly in Variant with MY PORTRAIT selected.
+
+LAYOUT REFINEMENTS: main headings match ATLAS, ARCHIVE, SELF-PORTRAIT and VARIANT. The result-to-editor PORTRAIT VARIANT action is a separate large button beneath the artwork. Book corner arrow glyphs are removed while click/drag turning stays enabled. In Atlas dialogs, the description viewport exactly matches the left image height, scrolls independently, and keeps bottom padding. Questionnaire questions and answers are about 10–15% smaller, with narrower balanced answer text to avoid graphic-edge tangencies.
+
+VARIANT SOURCE NAMES: 11 / SURVIVOR; 12 / ORGANIZER / KING; 13 / ORGANIZER / SUBJECT; 14 / INVENTOR / MASTER; 15 / INVENTOR / OPERATIVE; 16 / COMMUNICATER. All Variant source and library labels use uppercase.
