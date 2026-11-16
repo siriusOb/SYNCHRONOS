@@ -155,3 +155,148 @@ header{position:sticky!important;top:0;z-index:50;min-height:64px;padding:14px 3
 .poster-view>img{width:var(--poster-width,auto)!important;height:var(--poster-height,100%)!important;min-width:0;min-height:0}
 @media(max-width:700px){#lab.portrait-view .portrait-identity{gap:20px}#lab.portrait-view .portrait-result .portrait-name{font-size:25px}#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{width:185px;min-height:45px;font-size:10px}#lab.portrait-view .portrait-control-dock .portrait-tools button{font-size:9px;min-height:33px}}
 @media(max-width:540px){#lab.portrait-view .portrait-identity{grid-template-columns:1fr;gap:12px;padding:7px 0 14px}#lab.portrait-view .portrait-result .portrait-name{font-size:24px}#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{width:190px;min-height:42px}#lab.portrait-view .portrait-control-dock .pattern-overlap{flex-basis:100%}#lab.portrait-view .portrait-control-dock .portrait-tools{flex-basis:100%}#lab.portrait-view .portrait-control-dock .portrait-tools button{font-size:9px;min-height:32px;padding:8px}#lab.portrait-view .portrait-canvas-footer{margin:8px 0 14px}}
+/* Editorial result: title and artwork share one spread. */
+#lab .lab-workspace>.portrait-name-block{display:none}
+#lab.portrait-view .lab-workspace{grid-template-columns:minmax(180px,24%) minmax(0,1fr);gap:48px;align-items:stretch}
+#lab.portrait-view .lab-workspace>.portrait-name-block{display:flex;flex-direction:column;justify-content:center;align-self:stretch;min-width:0;padding:0 0 66px;max-width:250px}
+#lab.portrait-view .portrait-name-block .portrait-name-label{font-size:10px;letter-spacing:.14em;margin-bottom:22px}
+#lab.portrait-view .portrait-name-block .portrait-name{font-family:var(--typewriter);font-size:clamp(34px,4.1vw,54px);font-weight:400;line-height:1.04;letter-spacing:-1.8px;margin:0;text-wrap:balance;overflow-wrap:normal}
+#lab.portrait-view .portrait-name-block .portrait-description{font-size:11px;line-height:1.8;color:#96afbb;margin:22px 0 0;padding-top:18px;position:relative}
+#lab.portrait-view .portrait-name-block .portrait-description::before{content:'';position:absolute;left:0;top:0;width:30px;height:2px;background:#00aeef}
+#lab.portrait-view .portrait-result{height:45px;margin:0 0 14px!important}
+#lab.portrait-view .portrait-identity{display:flex;justify-content:flex-end;height:45px;padding:0}
+#lab.portrait-view .portrait-primary-action-slot .portrait-variant-action button{min-height:42px;padding:10px 16px}
+#lab.portrait-view .portrait-control-dock .portrait-tools{flex:1;width:100%;gap:8px}
+#lab.portrait-view .portrait-canvas-footer{margin-bottom:8px}
+.poster-sheet{position:relative;width:var(--poster-width,auto);height:var(--poster-height,100%);min-width:0;min-height:0;max-width:100%;max-height:100%;cursor:crosshair}
+.poster-sheet>img,.poster-sheet>canvas{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;box-shadow:none;margin:0}
+.poster-sheet>[hidden]{display:none!important}
+.poster-lens{border:0!important;box-shadow:none!important;outline:0!important;background:transparent!important;overflow:hidden}
+.poster-lens::after{display:none}
+.poster-lens canvas{display:block;width:100%;height:100%}
+@media(max-width:700px){#lab.portrait-view .lab-workspace{grid-template-columns:155px minmax(0,1fr);gap:22px}#lab.portrait-view .portrait-name-block .portrait-name{font-size:35px;letter-spacing:-1px}#lab.portrait-view .portrait-name-block .portrait-description{font-size:10px}}
+@media(max-width:540px){#lab.portrait-view .lab-workspace{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:14px}#lab.portrait-view .lab-workspace>.portrait-name-block{padding:0;max-width:none;display:block}#lab.portrait-view .portrait-name-block .portrait-name-label{font-size:8px;margin-bottom:8px}#lab.portrait-view .portrait-name-block .portrait-name{font-size:30px;line-height:1.1}#lab.portrait-view .portrait-name-block .portrait-description{display:none}#lab.portrait-view .portrait-result{height:42px;margin-bottom:14px!important}}
+/* Keep the questionnaire as unruled paper with graphic-only choices. */
+#lab .native-quiz .quiz-progress,#lab .native-quiz .quiz-actions{border:0!important;box-shadow:none!important}
+#lab .native-quiz .quiz-track{visibility:hidden;background:none!important;height:0;margin:0!important;padding:0}
+#lab .native-quiz .choice-number,#lab .native-quiz .choice-arrow{display:none!important}
+#lab .native-quiz .quiz-actions{width:100%;max-width:none;justify-content:space-between;padding-right:var(--quiz-note-inset,0px);gap:14px}
+#lab .native-quiz .quiz-actions small{margin-left:auto;text-align:right;max-width:none}
+#lab .native-quiz.is-creating{background:none!important;display:flex;align-items:center;justify-content:center;padding:24px!important}
+#lab .portrait-creating{width:100%;text-align:center}
+#lab .portrait-creating .creating-traces{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:center;gap:18px;width:min(720px,100%);margin:0 auto 36px}
+#lab .portrait-creating .creating-traces img{display:block;width:100%;height:100px;object-fit:contain;filter:url('#quiz-cyan');opacity:0;animation:portrait-trace-arrive .32s ease-out var(--trace-delay) forwards}
+#lab .portrait-creating .creating-traces img:nth-child(even){filter:url('#quiz-magenta')}
+#lab .native-quiz .portrait-creating h2{color:#edf6fa;font-size:clamp(20px,2.6vw,32px)!important;margin:0;max-width:none;font-weight:400}
+@keyframes portrait-trace-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:540px){#lab .portrait-creating .creating-traces{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}#lab .portrait-creating .creating-traces img{height:70px}}
+@media(prefers-reduced-motion:reduce){#lab .portrait-creating .creating-traces img{animation:none;opacity:1}}
+#lab .native-quiz.is-creating::before{display:none!important}
+/* Leave breathing room between the variant workspace and the page footer. */
+#lab:not(.portrait-view) .lab-workspace{height:calc(var(--portrait-height) - 24px);margin-bottom:24px}
+#lab:not(.portrait-view) .portrait-canvas-footer{padding:14px 0 18px}
+#lab:not(.portrait-view) .portrait-canvas-footer>.stage-meta{min-height:20px;padding:0;line-height:1.6}
+#lab:not(.portrait-view) .native-controls{box-sizing:border-box;padding-bottom:36px;scroll-padding-block:18px 36px}
+#lab:not(.portrait-view) .native-controls .native-actions{margin-top:24px;padding-top:20px;gap:10px}
+#lab:not(.portrait-view) .native-controls .native-caption{margin-top:18px;line-height:1.8}
+/* Unframed artwork and quiet result actions beneath the title. */
+#lab .lab-workspace,#lab .portrait-canvas-footer,#lab .portrait-canvas-footer>.stage-meta{border-bottom:0!important;box-shadow:none}
+#lab .lab-canvas-area,#lab .lab-canvas-area canvas{border:0!important;outline:0;box-shadow:none}
+#lab.portrait-view .lab-heading{border:0;padding-bottom:0}
+#lab.portrait-view .lab-heading h1{display:none}
+#lab.portrait-view .portrait-control-dock{display:none}
+#lab.portrait-view .portrait-name-block .portrait-result-controls{border:0;padding:0;margin:26px 0 0;display:block}
+#lab.portrait-view .portrait-name-block .portrait-tools{display:flex;justify-content:flex-start;align-items:center;gap:9px;width:auto;margin:0;flex-wrap:wrap}
+#lab.portrait-view .portrait-name-block .portrait-tools button{flex:none;min-height:36px;padding:10px 12px;font-size:9px}
+#lab .portrait-creating .creating-traces{margin-bottom:56px}
+#lab .native-quiz .portrait-creating h2{font-size:clamp(17px,1.7vw,23px)!important;line-height:1.5!important}
+@media(max-width:540px){#lab.portrait-view .portrait-name-block .portrait-result-controls{margin-top:18px}#lab .portrait-creating .creating-traces{margin-bottom:42px}#lab .native-quiz .portrait-creating h2{font-size:17px!important}}
+/* A clear glass rim, with the PDF detail kept sharp underneath. */
+.poster-lens{box-shadow:inset 0 0 0 1px #eafaff80,inset 2px 3px 4px #ffffff30,inset -2px -2px 4px #8ae0ff28!important}
+.poster-lens::after{content:'';display:block;position:absolute;inset:0;left:0;top:0;width:100%;height:100%;border:1px solid #eafaff70;border-radius:50%;box-sizing:border-box;transform:none;pointer-events:none;background:radial-gradient(ellipse at 28% 13%,#ffffff32 0,transparent 38%),linear-gradient(135deg,#ffffff14,transparent 32%,transparent 78%,#c8f2ff15)}
+/* Result navigation occupies a single row. */
+#lab .lab-heading>.portrait-variant-action{display:none}
+#lab.portrait-view .portrait-tabs{display:none!important}
+#lab.portrait-view .lab-heading{min-height:44px;height:44px;padding:0;margin-bottom:14px}
+#lab.portrait-view .lab-heading>.portrait-variant-action{display:flex;position:absolute;right:0;top:0;width:auto;padding:0;margin:0}
+#lab.portrait-view .lab-heading>.portrait-variant-action button{width:210px;min-height:42px;padding:10px 16px;font-size:11px}
+#lab.portrait-view .lab-heading>.portrait-variant-action button span:last-child{font-size:20px}
+#lab.portrait-view .portrait-result{display:none!important;height:0;min-height:0;margin:0!important;padding:0}
+#lab.portrait-view .lab-workspace>.portrait-name-block{transform:translateY(-12px)}
+#lab.portrait-view .portrait-name-block .portrait-tools{gap:9px}
+#lab.portrait-view .portrait-name-block .portrait-tools button{min-height:40px;padding:12px 13px;font-size:10px;display:inline-flex;align-items:center;gap:8px}
+#lab.portrait-view .portrait-name-block .portrait-tools button span{font-size:14px;line-height:1}
+@media(max-width:540px){#lab.portrait-view .lab-heading{min-height:44px;padding:0;margin-bottom:14px}#lab.portrait-view .lab-workspace>.portrait-name-block{transform:none}#lab.portrait-view .lab-heading>.portrait-variant-action button{width:195px;min-height:40px;font-size:10px}}
+/* A compact variant footer with the current graphic status at the left. */
+#lab:not(.portrait-view) .lab-workspace{height:calc(var(--portrait-height) - 14px);margin-bottom:14px}
+#lab:not(.portrait-view) .portrait-canvas-footer{padding:12px 0 10px}
+#lab:not(.portrait-view) .portrait-canvas-footer>.stage-meta{justify-content:flex-start;text-align:left}
+#lab:not(.portrait-view) .portrait-canvas-footer>.stage-meta>span:first-child{display:none}
+#lab:not(.portrait-view) .portrait-canvas-footer #liveParams{margin:0;text-align:left}
+/* Keep both portrait actions on one line at intermediate screen widths. */
+#lab.portrait-view .portrait-name-block .portrait-tools{flex-wrap:nowrap}
+#lab.portrait-view .portrait-name-block .portrait-tools button{white-space:nowrap}
+@media(min-width:541px){#lab.portrait-view .lab-workspace{grid-template-columns:minmax(250px,24%) minmax(0,1fr)}}
+/* A title and image spread with the variant action below the image. */
+#lab.portrait-view .portrait-tabs{display:flex!important;top:0;bottom:auto;left:auto;right:0;width:auto}
+#lab.portrait-view .lab-heading{height:44px;min-height:44px;margin-bottom:18px}
+#lab.portrait-view .lab-workspace{padding:0 3vw;box-sizing:border-box}
+#lab.portrait-view .lab-workspace>.portrait-name-block{justify-content:flex-start;transform:none;padding:var(--result-title-top,20px) 0 0}
+#lab.portrait-view .portrait-canvas-footer{display:flex;flex-direction:row;justify-content:flex-end;align-items:center;width:var(--art-width,100%);max-width:100%;margin:18px 0 16px;padding:0}
+#lab.portrait-view .portrait-canvas-footer>.stage-meta{display:none}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action{display:flex;justify-content:flex-end;margin:0;padding:0;width:auto}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:280px;min-height:50px;padding:13px 20px;font-size:12px}
+@media(max-width:700px){#lab.portrait-view .lab-workspace{padding:0 1vw}#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:240px;min-height:46px;font-size:11px}}
+@media(max-width:540px){#lab.portrait-view .lab-workspace{padding:0}#lab.portrait-view .lab-workspace>.portrait-name-block{padding:0}#lab.portrait-view .portrait-canvas-footer{margin:14px 0 12px}#lab.portrait-view .portrait-tabs{width:auto;left:auto;right:0;top:0;bottom:auto}#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:230px;min-height:44px}}
+#lab.portrait-view .portrait-canvas-footer>.stage-meta{display:none!important}
+/* Final result placement, measured against the supplied 1592 × 1006 reference. */
+#lab.portrait-view .portrait-tabs{display:flex!important;top:0;bottom:auto;left:auto;right:0;width:auto}
+#lab.portrait-view .lab-heading{height:44px;min-height:44px;margin-bottom:18px}
+#lab.portrait-view .lab-workspace{margin-top:var(--result-top-gap,12px);padding:0 3vw;box-sizing:border-box}
+#lab.portrait-view .lab-viewer{justify-content:flex-start}
+#lab.portrait-view .lab-canvas-area{flex:none;height:min(calc((100vw - 390px) * .642857),calc(var(--result-workspace-height) - 100px));align-items:flex-start;margin:0}
+#lab.portrait-view .lab-workspace>.portrait-name-block{justify-content:flex-start;transform:none;padding:var(--result-title-top,0px) 0 0}
+#lab.portrait-view .portrait-name-block .portrait-tools{flex-wrap:nowrap}
+#lab.portrait-view .portrait-name-block .portrait-tools button{white-space:nowrap;min-height:40px;padding:12px 13px;font-size:10px;display:inline-flex;align-items:center;gap:8px}
+#lab.portrait-view .portrait-name-block .portrait-tools button span{font-size:14px}
+#lab.portrait-view .portrait-canvas-footer{display:flex;flex-direction:row;justify-content:flex-end;align-items:center;width:var(--art-width,100%);max-width:100%;margin:6px 0 0;padding:0}
+#lab.portrait-view .portrait-canvas-footer>.stage-meta{display:none!important}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action{display:flex;justify-content:flex-end;margin:0;padding:0;width:auto}
+#lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:clamp(240px,22.4vw,356px);min-height:clamp(48px,7.15vh,72px);font-size:clamp(11px,1.05vw,16px);padding:14px 24px}
+@media(min-width:1100px){#lab.portrait-view .lab-workspace{width:82.8vw;max-width:none;grid-template-columns:25.8vw 57vw;gap:0;padding:0;margin-left:3.8vw;margin-right:0}#lab.portrait-view .lab-canvas-area{height:min(calc(57vw * .642857),calc(var(--result-workspace-height) - 100px))}#lab.portrait-view .lab-workspace>.portrait-name-block{max-width:310px}#lab.portrait-view .portrait-name-block .portrait-name{font-size:clamp(42px,3.9vw,62px)}#lab.portrait-view .portrait-name-block .portrait-name-label{font-size:12px;margin-bottom:34px}#lab.portrait-view .portrait-name-block .portrait-description{margin-top:38px;padding-top:32px;font-size:clamp(11px,1.15vw,18px)}#lab.portrait-view .portrait-name-block .portrait-description::before{width:52px;height:3px}#lab.portrait-view .portrait-name-block .portrait-result-controls{margin-top:38px}}
+@media(min-width:541px) and (max-width:1099px){#lab.portrait-view .lab-workspace{grid-template-columns:250px minmax(0,1fr)}}
+@media(max-width:700px){#lab.portrait-view .lab-workspace{padding:0 1vw}}
+@media(max-width:540px){#lab.portrait-view .lab-workspace{padding:0}#lab.portrait-view .lab-workspace>.portrait-name-block{padding:0}#lab.portrait-view .lab-canvas-area{height:min(calc((100vw - 24px) * .642857),calc(var(--result-workspace-height) - 180px))}#lab.portrait-view .portrait-canvas-footer{margin-top:10px}#lab.portrait-view .portrait-tabs{width:auto;left:auto;right:0;top:0;bottom:auto}}
+/* Smaller windows retain a centered composition instead of a corner layout. */
+@media(min-width:760px) and (max-width:1099px){
+ #lab.portrait-view .lab-workspace{width:92%;max-width:960px;margin-left:auto;margin-right:auto;padding:0;grid-template-columns:250px minmax(0,1fr);gap:28px}
+ #lab.portrait-view .lab-workspace>.portrait-name-block{padding:0;justify-content:center;align-self:stretch;max-width:250px}
+ #lab.portrait-view .portrait-name-block .portrait-name{font-size:38px;line-height:1.08;letter-spacing:-1px}
+ #lab.portrait-view .portrait-name-block .portrait-name-label{font-size:10px;margin-bottom:20px}
+ #lab.portrait-view .portrait-name-block .portrait-description{font-size:11px;margin-top:24px;padding-top:22px}
+ #lab.portrait-view .portrait-name-block .portrait-result-controls{margin-top:26px}
+ #lab.portrait-view .lab-canvas-area{height:var(--compact-result-image-height,300px)}
+ #lab.portrait-view .portrait-canvas-footer{margin-top:14px}
+ #lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:240px;min-height:48px;font-size:11px}
+}
+@media(max-width:759px){
+ #lab.portrait-view .lab-workspace{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;gap:28px;width:min(100%,620px);height:auto!important;min-height:0;margin:26px auto 28px;padding:0 12px}
+ #lab.portrait-view .lab-workspace>.portrait-name-block{display:block;max-width:none;padding:0;transform:none}
+ #lab.portrait-view .portrait-name-block .portrait-name-label{margin-bottom:12px;font-size:9px}
+ #lab.portrait-view .portrait-name-block .portrait-name{font-size:32px;line-height:1.15;text-wrap:balance;max-width:100%}
+ #lab.portrait-view .portrait-name-block .portrait-description{display:block;font-size:10px;margin-top:17px;padding-top:16px}
+ #lab.portrait-view .portrait-name-block .portrait-result-controls{margin-top:20px}
+ #lab.portrait-view .lab-viewer{height:auto;min-height:0;align-self:start}
+ #lab.portrait-view .lab-canvas-area{height:auto;aspect-ratio:14/9!important;min-height:0;flex:none}
+ #lab.portrait-view .portrait-canvas-footer{width:100%;margin:14px 0 0}
+ #lab.portrait-view .portrait-canvas-footer .portrait-variant-action button{width:min(240px,100%);min-height:46px;font-size:11px}
+}
+@media(min-width:1100px) and (max-height:760px){
+ #lab.portrait-view .portrait-name-block .portrait-name{font-size:clamp(36px,6.2vh,48px)}
+ #lab.portrait-view .portrait-name-block .portrait-name-label{margin-bottom:24px;font-size:10px}
+ #lab.portrait-view .portrait-name-block .portrait-description{margin-top:24px;padding-top:22px;font-size:12px}
+ #lab.portrait-view .portrait-name-block .portrait-result-controls{margin-top:26px}
+}
+@media(max-width:1099px){body:has(#lab.portrait-view:not([hidden])) main{min-height:calc(100svh - var(--header-height,68px) - var(--page-footer-height,28px));box-sizing:border-box}}
+/* The result artwork and its surrounding page share true black. */
+body:has(#lab.portrait-view:not([hidden])),body:has(#lab.portrait-view:not([hidden])) main,#lab.portrait-view,#lab.portrait-view .lab-canvas-area,#lab.portrait-view .lab-canvas-area canvas{background:#000000!important}
