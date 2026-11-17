@@ -8,9 +8,11 @@
  const book=$('book'),canvas=document.createElement('canvas');
  let gl=null;
  try{gl=canvas.getContext('webgl2',{antialias:true,alpha:true,premultipliedAlpha:true,depth:true,powerPreference:'high-performance'})}catch{}
- if(!gl){const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-62-gl';document.body.append(s);return}
+ if(!gl){const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-63-fix';document.body.append(s);return}
 
  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+ const hi=new Set();let inner=window.bookPageURL||null;
+ Object.defineProperty(window,'bookPageURL',{configurable:true,get(){return n=>(inner&&inner(n))||(hi.has(n)?`assets/book-pages/${String(n).padStart(2,'0')}.webp`:null)},set(f){inner=f}});
  const COLS=56,ROWS=14,PAPER=[298,300];
  let motion=null,grab=null,ignoreClickUntil=0,queued=0,lost=false,persp=1800;
 
@@ -51,17 +53,16 @@
   else{if(uHasB<.5)discard;c=texture(uB,vec2(uDir>0.?1.-u:u,v),-.6).rgb;n=-n;}
   vec3 L=normalize(vec3(-.32,-.46,.83));
   float f=clamp(dot(n,L)/L.z,0.,1.);
-  float light=1.-.30*(1.-f);
+  float light=1.-.17*(1.-f);
   float g=.105*max(0.,1.-u/uGW);
-  light*=(1.-g)*(1.-.12*uShade*u)*(1.-.16*uShade*exp(-u*7.));
-  if(!fr)light*=.96;
+  light*=(1.-g)*(1.-.10*uShade*u)*(1.-.10*uShade*exp(-u*6.));
   float paper=1.-.055*(1.-texture(uP,vec2(u*uSize.x,v*uSize.y)/vec2(${PAPER[0]}.,${PAPER[1]}.)).r);
   o=vec4(c*light*paper,1.);
  }`;
  function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
  const prog=gl.createProgram();
  try{gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog))}
- catch(e){console.warn('Page turn: WebGL shader failed, using DOM fallback',e);canvas.remove();const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-62-gl';document.body.append(s);return}
+ catch(e){console.warn('Page turn: WebGL shader failed, using DOM fallback',e);canvas.remove();const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-63-fix';document.body.append(s);return}
  gl.useProgram(prog);
  const U={};for(const k of ['uBook','uD','uDir','uHasF','uHasB','uShade','uGW','uSize','uF','uB','uP','uMode','uSA','uLs'])U[k]=gl.getUniformLocation(prog,k);
 
@@ -90,12 +91,12 @@
  {const im=new Image();im.onload=()=>{try{gl.deleteTexture(paperTex);paperTex=makeTex(im,true)}catch{}};im.src='assets/natural-paper.png'}
 
  const tex=new Map(),pending=new Map();let texSize=0;
- const wantSize=()=>Math.min(1400,Math.max(560,Math.ceil(book.clientWidth/2*Math.min(devicePixelRatio||1,2)*1.15)));
+ const wantSize=()=>Math.min(1400,Math.max(800,Math.ceil(book.clientWidth/2*Math.min(devicePixelRatio||1,2)*2)));
  async function fetchBitmap(n,size){
   const name=String(n).padStart(2,'0');
   for(const url of [`assets/book-pages/${name}.webp`,`assets/book-${name}.jpg`]){
    try{
-    const r=await fetch(url);if(!r.ok)continue;const blob=await r.blob();
+    const r=await fetch(url);if(!r.ok)continue;const blob=await r.blob();if(url.endsWith('.webp'))hi.add(n);
     try{return await createImageBitmap(blob,{resizeWidth:size,resizeQuality:'high'})}catch{}
     try{return await createImageBitmap(blob)}catch{}
     const im=new Image();im.src=URL.createObjectURL(blob);await im.decode();return im;

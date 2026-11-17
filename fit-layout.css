@@ -16,7 +16,7 @@ header{position:sticky!important;top:0;z-index:50;min-height:64px;padding:14px 3
 #lab .native-quiz{padding-top:calc(var(--portrait-height) * .16)!important;padding-bottom:calc(var(--portrait-height) * .16)!important}#lab .native-quiz .collected-traces{top:calc(var(--portrait-height) * .16 + 33px)}.quiz-human-ground{inset:120px 10% 85px}
 @media(min-width:541px){#lab .native-quiz .intro-art{inset:75px 9% 80px 53%}}
 #lab .native-quiz .trace-choice strong{text-shadow:none!important;filter:none!important;background:transparent!important}
-#lab .native-quiz h2{font-family:'Synchronos Hand','X Typewriter',var(--typewriter),serif!important;font-weight:400!important;text-shadow:none!important}
+#lab .native-quiz h2{font-family:'Synchronos Hand','X Typewriter',var(--typewriter),Pretendard,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif!important;font-weight:400!important;text-shadow:none!important}
 /* Keep all questionnaire content within the parchment's quiet inner field. */
 #lab .native-quiz{padding:calc(var(--portrait-height) * .20) 11% calc(var(--portrait-height) * .19)!important}
 #lab .native-quiz h2{font-size:clamp(20px,2vw,29px)!important;line-height:1.42!important;max-width:100%;margin:15px 0 11px}
@@ -311,3 +311,9 @@ body:has(#lab.portrait-view:not([hidden])),body:has(#lab.portrait-view:not([hidd
 .book-leaf:not(.blank){box-shadow:0 8px 12px rgba(0,0,0,.32)}
 .turn-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9;display:block}
 .turn-canvas[hidden]{display:none}
+
+/* Page shadows fall only outward: they must not spill across the binding into the facing page
+   (that made the centre darker than the original and made it jump when a turn landed). */
+.book-leaf.left{clip-path:inset(-40px 0 -40px -40px)}
+.book-leaf.right{clip-path:inset(-40px -40px -40px 0)}
+.book.cover .book-leaf{clip-path:none}
