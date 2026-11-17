@@ -1,7 +1,7 @@
 /* Independent vector objects; each library canvas remembers its own arrangement. */
 window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  const scenes=new Map();let current='17',selected=null,serial=0,drag=null,portraitKey='';
- const $=id=>document.getElementById(id),art=n=>`assets/vectors/graphic-${String(n).padStart(2,'0')}${n<=10?'-stamp':''}.svg`;
+ const $=id=>document.getElementById(id),art=n=>`assets/previews/graphic-${String(n).padStart(2,'0')}.webp`;
  const title=n=>(n==='portrait'?'MY PORTRAIT':names[n]||(n>=6&&n<=10?names[n-5]+' / VARIATION':'GRAPHIC '+n)).toUpperCase();
  function makeObject(source,props={}){const o={id:++serial,source:+source,x:700,y:550,baseSize:780,scale:100,angle:0,front:'#ec008c',back:'#00aeef',frontStyle:'line',backStyle:'fill',offset:18,copies:1,opacity:100,...props};o.initial={...o};return o}
  function initialScene(source){return{objects:[makeObject(source)],width:1400,height:1100}}

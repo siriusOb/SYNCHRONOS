@@ -1,4 +1,4 @@
-SYNCHRONOS — 전체 웹사이트 / COMPLETE 57
+SYNCHRONOS — 전체 웹사이트 / COMPLETE 58 / FAST LOADING
 
 이 폴더 하나에 실행에 필요한 웹 파일, 이미지, 그래픽, 서체, 원본 책·포스터 PDF, PDF 표시 라이브러리가 모두 들어 있습니다.
 
@@ -22,3 +22,5 @@ VARIANT: 그래픽 추가·선택·이동, 개별 옵션 조절, 상단 고정 P
 
 American Typewriter Regular / X Typewriter Regular 웹 서체 포함.
 서체·종이 질감의 출처 표기는 assets/fonts/FONT-NOTICE.txt 및 assets/TEXTURE-CREDITS.txt 참조.
+
+로딩 개선 58: 아틀라스·질문·선택 목록에는 가벼운 미리보기를 사용하고, 원본 벡터는 선택한 그래픽만 읽습니다. 결과와 PNG 저장은 원본 벡터를 유지합니다.

@@ -12,7 +12,7 @@
  window.openAtlasEntry=async n=>{
  const token=++entryToken;
   const group=categories[n],h=human[n],bookPage=group?.[2]||h?.[1]||speciesPages[n]||1;
-  $('entryImage').src=asset(n);$('entryImage').alt=`Original postcard ${n}`;$('entryImageLabel').textContent=`POSTCARD ${String(n).padStart(2,'0')} / ORIGINAL AI ARTWORK`;
+  $('entryImage').src=thumbAsset(n);const originalImage=new Image();originalImage.src=asset(n);originalImage.decode().then(()=>{if(token===entryToken&&dialog.open)$('entryImage').src=originalImage.src}).catch(()=>{});$('entryImage').alt=`Original postcard ${n}`;$('entryImageLabel').textContent=`POSTCARD ${String(n).padStart(2,'0')} / ORIGINAL AI ARTWORK`;
   $('entryCategory').textContent=group?`CHAPTER 02 / ${[1,2,7].includes(n)?'CLINICAL CONDITIONS':'CONTEMPORARY PHENOMENA'}`:h?'CHAPTER 01 / HUMAN':n===12?'SYNCHRONOS / COVER':'CHAPTER 03 / SPECIES';
   $('entryTitle').textContent=group?.[0]||h?.[0]||cardNames[n-1];$('entrySubhead').textContent=group?.[1]||'Original text from the book';$('entryBody').replaceChildren();$('entryBookLabel').textContent=`BOOK / PDF ${bookPage}${group?'–'+(bookPage+1):''} OF 40`;
   $('entryBook').onclick=()=>{dialog.close();setEdition('book');jumpPage(bookPage);setView('archive')};$('entryLab').onclick=()=>{dialog.close();setCard(n);setView('lab')};
