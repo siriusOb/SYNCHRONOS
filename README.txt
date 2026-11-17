@@ -1,28 +1,29 @@
-SYNCHRONOS — 전체 웹사이트 / COMPLETE 59 / STABLE RECOVERY
+SYNCHRONOS — COMPLETE 60 / RESPONSIVE READER & PORTRAIT
 
-이 폴더 하나에 실행에 필요한 웹 파일, 이미지, 그래픽, 서체, 원본 책·포스터 PDF, PDF 표시 라이브러리가 모두 들어 있습니다.
+실행에 필요한 웹 파일, 이미지, 원본 벡터, 웹 서체, 원본 책·포스터 PDF를 포함한 전체본입니다.
 
-1. ZIP을 새 위치에 압축 해제합니다. 기존 패치 폴더와 합치지 않아도 됩니다.
-2. 폴더 안 START.command를 더블클릭합니다. 브라우저가 자동으로 열립니다.
-3. 실행 중에는 열린 터미널 창을 유지합니다. Control+C로 종료할 수 있습니다.
+1. ZIP을 새 위치에 압축 해제합니다.
+2. START.command를 더블클릭합니다.
+3. 열린 터미널 창은 실행 중 유지합니다. 종료는 Control+C.
 
-START.command가 열리지 않으면 터미널에서 이 폴더로 이동한 뒤 아래 명령을 실행합니다.
+파일을 더블클릭해서 index.html을 직접 열면 데이터 읽기가 차단될 수 있습니다.
+START.command가 열리지 않으면 이 폴더에서 아래 명령으로 서버를 실행합니다.
 python3 -m http.server 4174 --bind 127.0.0.1
 그런 다음 http://127.0.0.1:4174/ 를 엽니다.
 
-index.html을 파일로 직접 열면 PDF·그래픽 데이터 읽기가 차단될 수 있으므로 위 로컬 링크로 확인합니다.
+GitHub Pages에는 index.html, CSS·JS·MJS 파일과 assets 전체를 같은 위치에 올립니다.
+특히 이번에 추가된 assets/book-pages 폴더 40개 파일을 포함해야 합니다.
+원본 PDF와 벡터 및 fonts 폴더도 모두 포함되어 있습니다.
 
-GitHub Pages 발행 시:
-이 폴더 내부의 index.html, CSS·JS·MJS 파일과 assets 폴더를 같은 위치에 올립니다. assets 폴더를 나누거나 이름을 변경하지 않습니다. START.command와 이 안내 파일은 웹 실행에 필수가 아닙니다.
-
-ATLAS: 12개의 원본 엽서와 책·질병 설명의 연결.
-ARCHIVE: 원본 40쪽 책 PDF와 포스터 PDF. 책의 넘김 모션 유지.
-SELF-PORTRAIT: 6개의 선택, 그래픽 순차 등장, 마지막 등장 후 1초 대기, 초상 결과 및 PNG 저장.
-VARIANT: 그래픽 추가·선택·이동, 개별 옵션 조절, 상단 고정 PNG 저장.
+개선 60:
+- Self-Portrait의 BEGIN은 전체 6.6MB 벡터 파일을 기다리지 않습니다.
+- 선택한 그래픽만 원본으로 읽고, 도착 전에는 미리보기를 표시합니다.
+- 6문항 이후 생성 모션 및 마지막 그래픽 등장 후 1초 대기를 유지합니다.
+- PNG 저장 시 현재 조합의 원본 벡터를 확보한 뒤 2800px로 생성합니다.
+- 책 40쪽을 원본 PDF에서 1400×2800px 무손실 WebP로 미리 렌더링했습니다.
+- 브라우저에서 전체 책 PDF를 내려받아 재렌더링하는 비용을 제거했습니다.
+- 페이지 넘김 중 이미지 교체를 막고, 모든 조각이 같은 원본을 사용합니다.
+- 연속 넘김 입력을 보존하고, 목차·진행 바 조작은 현재 모션을 즉시 취소합니다.
 
 American Typewriter Regular / X Typewriter Regular 웹 서체 포함.
-서체·종이 질감의 출처 표기는 assets/fonts/FONT-NOTICE.txt 및 assets/TEXTURE-CREDITS.txt 참조.
-
-복구 59: 검증된 질문·결과 처리로 복원. 책 넘김이 PDF 고해상도 처리 완료를 기다리지 않도록 수정. 미리보기와 원본 벡터·PDF를 모두 포함합니다.
-
-확인: 책 앞뒤 넘김 및 마지막 장 이동, 6문항을 두 차례 완료, 생성 화면 이후 결과, 2800×1800 PNG 미리보기, 재시험, Variant 이동 및 개별 impressions 조절.
+FONT-NOTICE.txt 및 TEXTURE-CREDITS.txt의 출처 표기를 유지합니다.

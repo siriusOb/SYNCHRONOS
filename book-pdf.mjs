@@ -1,49 +1,27 @@
-/* Render original PDF pages at the displayed size; the turn animation uses the same URLs. */
-import {getDocument,GlobalWorkerOptions} from './assets/vendor/pdfjs/pdf.mjs';
-GlobalWorkerOptions.workerSrc=new URL('./assets/vendor/pdfjs/pdf.worker.mjs',import.meta.url).href;
-const archive=document.getElementById('archive'),edition=document.getElementById('bookEdition'),book=document.getElementById('book');
-const cache=new Map(),pending=new Map(),queue=[];let documentPromise,working=false,frame=0,reported=false;
+/* Pages are rendered once from the original PDF at build time, losslessly.
+   Reading/turning never downloads or rasterizes the full PDF on the UI thread. */
+const book=document.getElementById('book'),archive=document.getElementById('archive'),edition=document.getElementById('bookEdition');
+const ready=new Map(),tasks=new Map(),lowImages=new Map();let timer;
 const visible=()=>!archive.hidden&&!edition.hidden;
-function widthNeeded(){return Math.ceil(Math.min(1800,Math.max(900,book.getBoundingClientRect().width/2*Math.min(devicePixelRatio||1,3)*1.5)))}
-function touch(n,entry){cache.delete(n);cache.set(n,entry);return entry}
-function trim(){if(book.classList.contains('is-turning'))return;const protectedPages=[...book.querySelectorAll('img[data-pdf-page]')].map(e=>Number(e.dataset.pdfPage));for(const [n,e] of cache){if(cache.size<=12)break;if(protectedPages.includes(n))continue;cache.delete(n);URL.revokeObjectURL(e.url)}}
-function originalDocument(){return documentPromise??=getDocument({url:new URL('./assets/synchronos-source.pdf',import.meta.url).href}).promise.catch(error=>{documentPromise=undefined;throw error})}
-async function pump(){
- if(working)return;working=true;
- while(queue.length){const job=queue.shift();let canvas;
-  try{
-   const pdf=await originalDocument(),page=await pdf.getPage(job.n),base=page.getViewport({scale:1}),viewport=page.getViewport({scale:job.width/base.width});
-   canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
-   await page.render({canvasContext:canvas.getContext('2d'),viewport,background:'rgb(255,255,255)'}).promise;
-   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('The PDF page could not be rendered.');
-   const existing=cache.get(job.n);
-   if(existing&&existing.width>job.width){job.resolve(existing)}else{const entry={url:URL.createObjectURL(blob),width:job.width};if(existing)setTimeout(()=>URL.revokeObjectURL(existing.url),30000);touch(job.n,entry);job.resolve(entry)}
-   page.cleanup();trim();
-  }catch(error){job.reject(error)}finally{pending.delete(job.key);if(canvas){canvas.width=canvas.height=1}}
- }
- working=false;
+const high=n=>`assets/book-pages/${String(n).padStart(2,'0')}.webp`;
+function load(n){
+ if(ready.has(n))return Promise.resolve(ready.get(n));if(tasks.has(n))return tasks.get(n);
+ const task=new Promise((resolve,reject)=>{const im=new Image();im.decoding='async';im.onload=async()=>{try{await im.decode()}catch{}ready.set(n,im.src);resolve(im.src)};im.onerror=()=>{tasks.delete(n);reject(Error('Book page '+n+' unavailable'))};im.src=high(n)});tasks.set(n,task);return task;
 }
-function renderPage(n){
- const width=widthNeeded(),cached=cache.get(n);if(cached&&cached.width>=width)return Promise.resolve(touch(n,cached));
- const key=n+'@'+width;if(pending.has(key))return pending.get(key);
- const task=new Promise((resolve,reject)=>queue.push({n,width,key,resolve,reject}));pending.set(key,task);pump();return task;
-}
-function report(error){if(!reported){console.error('Original book PDF could not load:',error);reported=true}}
-window.bookPageURL=n=>{const cached=cache.get(n);return cached?touch(n,cached).url:null};
+window.bookPageURL=n=>ready.get(n)||null;
 window.requestBookPage=async(n,image)=>{
  if(!visible())return;
- try{const entry=await renderPage(n);if(image.dataset.pdfPage===String(n)){image.src=entry.url;image.dataset.renderSource='pdf';image.decoding='async'}}catch(error){report(error)}
+ try{const url=await load(n);if(!book.classList.contains('is-turning')&&image.dataset.pdfPage===String(n)){image.src=url;image.dataset.renderSource='original-pdf-lossless'}}catch{}
 };
-window.prepareBookPages=async numbers=>{if(!visible())return;await Promise.all(numbers.map(n=>renderPage(n).catch(error=>report(error))))};
 function refresh(){
- if(!visible())return;const images=[...book.querySelectorAll('img[data-pdf-page]')].filter(e=>e.dataset.pdfPage),pages=images.map(e=>Number(e.dataset.pdfPage));
- Promise.all(images.map(e=>window.requestBookPage(Number(e.dataset.pdfPage),e))).then(()=>{
-  if(!visible()||images.some(e=>!pages.includes(Number(e.dataset.pdfPage))))return;
-  const low=Math.min(...pages),high=Math.max(...pages),nearby=[low-2,low-1,high+1,high+2].filter(n=>n>=1&&n<=40&&!pages.includes(n));
-  for(const n of nearby)renderPage(n).catch(error=>report(error));
- });
+ if(!visible()||book.classList.contains('is-turning'))return;
+ const images=[...book.querySelectorAll('.book-leaf img[data-pdf-page]')].filter(e=>e.dataset.pdfPage),pages=images.map(e=>+e.dataset.pdfPage);
+ for(const image of images)window.requestBookPage(+image.dataset.pdfPage,image);
+ if(!pages.length)return;
+ for(const n of lowImages.keys())if(n<Math.min(...pages)-2||n>Math.max(...pages)+2)lowImages.delete(n);
+ // Small immediate turn textures; high resolution is fetched for visible pages only.
+ for(let n=Math.max(1,Math.min(...pages)-2);n<=Math.min(40,Math.max(...pages)+2);n++)if(!lowImages.has(n)){const im=new Image();im.src=`assets/book-${String(n).padStart(2,'0')}.jpg`;lowImages.set(n,im)}
 }
-function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(refresh)}
-new ResizeObserver(schedule).observe(book);
-const visibilityObserver=new MutationObserver(schedule);for(const target of [archive,edition])visibilityObserver.observe(target,{attributes:true,attributeFilter:['hidden']});
-addEventListener('bookspreadchange',schedule);addEventListener('resize',schedule);schedule();
+function schedule(){clearTimeout(timer);timer=setTimeout(refresh,80)}
+const observer=new MutationObserver(schedule);for(const target of [archive,edition])observer.observe(target,{attributes:true,attributeFilter:['hidden']});
+addEventListener('bookspreadchange',schedule);addEventListener('viewchange',schedule);schedule();

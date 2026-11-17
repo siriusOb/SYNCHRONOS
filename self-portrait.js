@@ -19,8 +19,9 @@
  let vectors=[],step=0,answers=[],choices=[],done=false,mode='quiz',portrait=false,patternSeed=1,patternOverlap=55,quizImagesReady=false;
  let creatingTimer;
  const quizImages=[];
- function syncBeginPortrait(){const b=$('beginPortrait');if(!b)return;const ready=!!vectors.length&&quizImagesReady;b.disabled=!ready;b.textContent=ready?'BEGIN':'PREPARING GRAPHICS…'}
- Promise.all(Array.from({length:10},(_,i)=>{const im=new Image();im.fetchPriority='high';im.src=`assets/previews/graphic-${String(i+1).padStart(2,'0')}.webp`;quizImages.push(im);return im.decode().catch(()=>{})})).then(()=>{quizImagesReady=true;syncBeginPortrait()});
+ const quizStarted=performance.now();
+ function syncBeginPortrait(){const b=$('beginPortrait');if(!b)return;const ready=true;b.disabled=!ready;b.textContent='BEGIN';lab.dataset.quizReadyMs=Math.round(performance.now()-quizStarted)}
+ Promise.all(Array.from({length:10},(_,i)=>{const im=new Image();im.fetchPriority='low';im.src=`assets/previews/graphic-${String(i+1).padStart(2,'0')}.webp`;quizImages.push(im);return im.decode().catch(()=>{})})).then(()=>{quizImagesReady=true;syncBeginPortrait()});
  const state={source:17,front:'#ec008c',back:'#00aeef',frontStyle:'line',backStyle:'fill',offset:18,scale:100,copies:1};
  const rand=n=>Math.floor(Math.random()*n),family=n=>n<=10?(n-1)%5+1:n;
  function makeChoices(){const counts={};answers.forEach(a=>counts[family(a.id)]=(counts[family(a.id)]||0)+1);let pool=[1,2,3,4,5].filter(n=>(counts[n]||0)<2);pool.sort(()=>Math.random()-.5);return pool.slice(0,3).map(n=>{const previous=answers.find(a=>family(a.id)===n);return previous?(previous.id<=5?n+5:n):n+(rand(2)?5:0)})}
@@ -31,7 +32,7 @@
  function reset(){clearTimeout(creatingTimer);quiz.classList.remove('is-creating');step=0;answers=[];choices=[];done=false;portrait=false;window.portraitRecord=null;showQuiz()}
  function intro(){quiz.innerHTML='<div class="quiz-art intro-art"><img src="assets/previews/graphic-17.webp" alt="Original Homo Synchronos artwork"></div><div class="quiz-intro"><span class="eyebrow">FIELD NOTE / YOU, TODAY</span><h2>What form does<br>your present take?</h2><p>Six small observations. Collect original graphic forms and arrange their sizes, spacing and overlaps into a personal pattern.</p><p class="hand-note">a passing observation, not a fixed identity.</p><button id="beginPortrait" class="solid" disabled>LOADING ORIGINAL FORMS…</button></div>';syncBeginPortrait();$('beginPortrait').onclick=()=>{choices=makeChoices();question()}}
  function question(){const questionIndex=step;if(!choices.length)choices=makeChoices();quiz.innerHTML=`<div class="quiz-progress"><span>OBSERVATION ${String(step+1).padStart(2,'0')} / 06</span><span>${answers.length} TRACES COLLECTED</span></div><div class="quiz-track"><i style="width:${step/6*100}%"></i></div><div class="collected-traces">${answers.map(a=>`<img src="assets/previews/graphic-${String(a.id).padStart(2,'0')}.webp" alt="Selected graphic, artboard ${a.id}">`).join('')}</div><h2>${questions[step][0]}</h2><div class="quiz-choices"></div><div class="quiz-actions"><button id="portraitBack">← ${step?'PREVIOUS OBSERVATION':'INTRO'}</button><small>choose a trace. the next observation follows.</small></div>`;
- questions[step][1].forEach((text,i)=>{const b=document.createElement('button');b.type='button';b.className='trace-choice';b.innerHTML=`<span class="stamp-visual" aria-hidden="true"><img class="stamp-ink" src="assets/previews/graphic-${String(choices[i]).padStart(2,'0')}.webp" alt="" decoding="sync"></span><span class="choice-number">0${i+1}</span><strong></strong><span class="choice-arrow">↗</span>`;b.querySelector('strong').textContent=text;b.onclick=()=>{if(step!==questionIndex||done)return;b.disabled=true;answers.push({id:choices[i],choice:i,text});step++;choices=[];if(step===6){done=true;portrait=true;patternSeed=rand(0x7fffffff);patternOverlap=55;window.portraitRecord={title:['The lingering signal','The returning trace','The branching current'][answers[1].choice]};createPortrait()}else question()};quiz.querySelector('.quiz-choices').append(b)});
+ questions[step][1].forEach((text,i)=>{const b=document.createElement('button');b.type='button';b.className='trace-choice';b.innerHTML=`<span class="stamp-visual" aria-hidden="true"><img class="stamp-ink" src="assets/previews/graphic-${String(choices[i]).padStart(2,'0')}.webp" alt="" decoding="sync"></span><span class="choice-number">0${i+1}</span><strong></strong><span class="choice-arrow">↗</span>`;b.querySelector('strong').textContent=text;b.onclick=()=>{if(step!==questionIndex||done)return;b.disabled=true;const chosen=choices[i];ensureVector(chosen).catch(()=>{});answers.push({id:chosen,choice:i,text});step++;choices=[];if(step===6){done=true;portrait=true;patternSeed=rand(0x7fffffff);patternOverlap=55;window.portraitRecord={title:['The lingering signal','The returning trace','The branching current'][answers[1].choice]};createPortrait()}else question()};quiz.querySelector('.quiz-choices').append(b)});
  $('portraitBack').onclick=()=>{if(step){step--;answers.pop();choices=[];question()}else intro()};
  }
  function createPortrait(){
@@ -60,14 +61,36 @@
  function fit(g,size){return size/Math.max(g.width,g.height)}
  window.nativeExportName=()=>portrait?'synchronos-pattern':'synchronos-variant';
  window.nativeDimensions=()=>portrait?[1400,900]:editor.frame();
- window.renderNative=(k,w,h,transparent)=>{if(!vectors.length)return false;k.clearRect(0,0,w,h);if(!transparent){k.fillStyle=portrait?'#000000':'#080c0f';k.fillRect(0,0,w,h)}k.save();const dimensions=portrait?[1400,900]:editor.frame(),box=[0,0,...dimensions],zoom=Math.min(w/box[2],h/box[3]);k.translate((w-box[2]*zoom)/2-box[0]*zoom,(h-box[3]*zoom)/2-box[1]*zoom);k.scale(zoom,zoom);for(const e of plan()){const g=vectors[e.id-1],scale=fit(g,e.size);k.save();k.globalAlpha=e.alpha;k.translate(e.x,e.y);k.rotate(e.angle||0);k.translate(-g.width*scale/2,g.height*scale/2);k.scale(scale,-scale);for(const p of g.paths){k.save();k.transform(...p.matrix);k.fillStyle=k.strokeStyle=e.colour;k.lineWidth=e.style==='line'?(p.kind==='line'?Math.min(p.width,.3):.55):Math.max(p.width,e.minStroke||0);k.lineJoin='round';if(e.style==='line')k.stroke(p.path);else if(p.kind==='fill'||e.style==='fill')k.fill(p.path,p.kind==='line'?'evenodd':'nonzero');else k.stroke(p.path);k.restore()}k.restore()}if(!portrait&&k.canvas===c)editor.paintSelection(k);k.restore();$('labSourceName').textContent=portrait?'PERSONAL PATTERN / 6 COLLECTED TRACES':editor.label();$('liveParams').textContent=portrait?'6 COLLECTED TRACES':editor.status();return true};
+ window.renderNative=(k,w,h,transparent)=>{if(!vectors.length)return false;k.clearRect(0,0,w,h);if(!transparent){k.fillStyle=portrait?'#000000':'#080c0f';k.fillRect(0,0,w,h)}k.save();const dimensions=portrait?[1400,900]:editor.frame(),box=[0,0,...dimensions],zoom=Math.min(w/box[2],h/box[3]);k.translate((w-box[2]*zoom)/2-box[0]*zoom,(h-box[3]*zoom)/2-box[1]*zoom);k.scale(zoom,zoom);for(const e of plan()){const g=vectors[e.id-1],scale=fit(g,e.size);if(!g.ready){ensureVector(e.id).catch(()=>{});const im=preview(e.id,e.colour);if(im){k.save();k.globalAlpha=e.alpha;k.translate(e.x,e.y);k.rotate(e.angle||0);k.drawImage(im,-g.width*scale/2,-g.height*scale/2,g.width*scale,g.height*scale);k.restore()}continue;}k.save();k.globalAlpha=e.alpha;k.translate(e.x,e.y);k.rotate(e.angle||0);k.translate(-g.width*scale/2,g.height*scale/2);k.scale(scale,-scale);for(const p of g.paths){k.save();k.transform(...p.matrix);k.fillStyle=k.strokeStyle=e.colour;k.lineWidth=e.style==='line'?(p.kind==='line'?Math.min(p.width,.3):.55):Math.max(p.width,e.minStroke||0);k.lineJoin='round';if(e.style==='line')k.stroke(p.path);else if(p.kind==='fill'||e.style==='fill')k.fill(p.path,p.kind==='line'?'evenodd':'nonzero');else k.stroke(p.path);k.restore()}k.restore()}if(!portrait&&k.canvas===c)editor.paintSelection(k);k.restore();$('labSourceName').textContent=portrait?'PERSONAL PATTERN / 6 COLLECTED TRACES':editor.label();$('liveParams').textContent=portrait?'6 COLLECTED TRACES':editor.status();return true};
  window.nativeWheel=e=>{if(mode==='studio'){editor.wheel(e);return}state.scale=Math.max(40,Math.min(180,state.scale-Math.sign(e.deltaY)*5));draw()};
  window.nativePointerDown=e=>{if(mode!=='studio')return false;editor.pointerDown(e);return true};
  window.nativePointerMove=e=>{if(mode!=='studio')return false;editor.pointerMove(e);return true};
  window.nativePointerUp=e=>{if(mode!=='studio')return false;editor.pointerUp(e);return true};
  window.openNativeSource=n=>{const mapping={1:2,2:1,7:3,8:4,10:5,3:14,4:11,5:12,6:13,9:17,11:17,12:17};showStudio(mapping[n]||17)};
- $('nativeSave').disabled=true;
- const vectorsReady=fetch('assets/vectors/graphics.json').then(r=>{if(!r.ok)throw Error('Vector source unavailable');return r.json()}).then(data=>{vectors=data;$('nativeSave').disabled=false;vectors.forEach(g=>g.paths.forEach(p=>p.path=new Path2D(p.d)));if(!step&&!done&&mode==='quiz')intro();draw()}).catch(()=>{quiz.innerHTML='<p>The original vector forms could not load. Please refresh to try again.</p>'});
- window.ensureNativeReady=()=>vectorsReady;
+ // The quiz never waits for vector downloads. Load only sources actually used.
+ const sourceMeta=[{"width":168.888,"height":163.215},{"width":175.924,"height":171.629},{"width":192.401,"height":200.722},{"width":130.909,"height":205.792},{"width":194.902,"height":194.483},{"width":210.543,"height":141.608},{"width":192.159,"height":187.474},{"width":212.286,"height":211.842},{"width":136.669,"height":206.755},{"width":249.029,"height":248.635},{"width":223.724,"height":298.237},{"width":228.973,"height":340.954},{"width":240.098,"height":280.773},{"width":96.1016,"height":328.337},{"width":160.733,"height":285.105},{"width":656.02,"height":294.772},{"width":82.8022,"height":300.092}];
+ vectors=sourceMeta.map(g=>({...g,paths:[]}));
+ const vectorTasks=new Map(),previewImages=new Map(),tintedPreviews=new Map();
+ function ensureVector(id){
+  if(vectors[id-1]?.ready)return Promise.resolve(vectors[id-1]);
+  if(vectorTasks.has(id))return vectorTasks.get(id);
+  lab.dataset.vectorRequests=String(vectorTasks.size+1);const task=fetch(`assets/vectors/graphic-${String(id).padStart(2,'0')}.json`).then(r=>{if(!r.ok)throw Error('Original graphic '+id+' unavailable');return r.json()}).then(g=>{
+   for(const p of g.paths)p.path=new Path2D(p.d);
+   g.ready=true;vectors[id-1]=g;lab.dataset.vectorsReady=String(vectors.filter(g=>g.ready).length);
+   if(currentView==='lab'&&!workspace.hidden)draw();
+   return g;
+  }).catch(error=>{vectorTasks.delete(id);throw error});
+  vectorTasks.set(id,task);return task;
+ }
+ function preview(id,colour){
+  const key=id+colour;if(tintedPreviews.has(key))return tintedPreviews.get(key);
+  let im=previewImages.get(id);
+  if(!im){im=new Image();previewImages.set(id,im);im.onload=()=>{if(currentView==='lab'&&!workspace.hidden)draw()};im.src=`assets/previews/graphic-${String(id).padStart(2,'0')}.webp`}
+  if(!im.complete||!im.naturalWidth)return null;
+  const layer=document.createElement('canvas');layer.width=im.naturalWidth;layer.height=im.naturalHeight;
+  const ink=layer.getContext('2d');ink.drawImage(im,0,0);ink.globalCompositeOperation='source-in';ink.fillStyle=colour;ink.fillRect(0,0,layer.width,layer.height);
+  if(tintedPreviews.size>32)tintedPreviews.clear();tintedPreviews.set(key,layer);return layer;
+ }
+ window.ensureNativeReady=()=>Promise.all([...new Set(plan().map(e=>e.id))].map(ensureVector));
  showQuiz();
 })();

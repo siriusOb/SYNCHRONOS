@@ -27,5 +27,5 @@
  new MutationObserver(schedule).observe(document.querySelector('main'),{attributes:true,attributeFilter:['hidden'],subtree:true});
  new ResizeObserver(schedule).observe(document.querySelector('.poster-view'));document.querySelector('.poster-view img').addEventListener('load',schedule);
  new MutationObserver(schedule).observe(document.querySelector('.native-quiz'),{childList:true,subtree:true});document.addEventListener('load',schedule,true);
- addEventListener('resize',schedule);document.fonts.ready.then(schedule);schedule();
+ addEventListener('bookspreadchange',schedule);addEventListener('resize',schedule);document.fonts.ready.then(schedule);schedule();
 })();
