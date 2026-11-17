@@ -1,4 +1,4 @@
-SYNCHRONOS — COMPLETE 60 / RESPONSIVE READER & PORTRAIT (61 / SMOOTH TURN)
+SYNCHRONOS — COMPLETE 60 / RESPONSIVE READER & PORTRAIT (62 / SEAMLESS TURN)
 
 실행에 필요한 웹 파일, 이미지, 원본 벡터, 웹 서체, 원본 책·포스터 PDF를 포함한 전체본입니다.
 
@@ -14,6 +14,15 @@ python3 -m http.server 4174 --bind 127.0.0.1
 GitHub Pages에는 index.html, CSS·JS·MJS 파일과 assets 전체를 같은 위치에 올립니다.
 특히 이번에 추가된 assets/book-pages 폴더 40개 파일을 포함해야 합니다.
 원본 PDF와 벡터 및 fonts 폴더도 모두 포함되어 있습니다.
+
+개선 62 (책장 넘김 — 이음새·틈·끊김 제거):
+- 넘어가는 책장을 24개 조각이 아닌 하나의 연속된 곡면(WebGL)으로 그립니다. 조각 사이 이음새와 틈이 생기지 않습니다.
+- 책장의 안쪽(제본선) 가장자리는 항상 제본선에 붙어 있고, 책장은 그 지점에서부터 부드럽게 휘어집니다. 앞·뒤 방향 모두 동일합니다.
+- 넘김 직전에 필요한 페이지 이미지를 미리 디코딩해 GPU에 올려 두어, 시작 순간의 멈칫거림을 없앴습니다.
+- 매 프레임 전체를 다시 블러하던 drop-shadow 필터를 제거하고 실제 페이지에 고정 그림자를 적용했습니다.
+- 드래그를 놓는 순간의 속도를 이어받아 안착하므로 속도 변화가 튀지 않습니다.
+- WebGL2를 쓸 수 없는 브라우저는 이전 방식(book-turn-legacy.js)으로 자동 전환됩니다.
+- 수정 파일: book-turn.js, book-turn-legacy.js(신규·예비), fit-layout.css, index.html(캐시 버전)
 
 개선 61 (페이지 넘김 모션):
 - 클릭·화살표 넘김을 0.42초 → 약 1.15초로 늘리고, 천천히 들리고 → 흐르고 → 내려앉는 ease-in-out 곡선으로 교체했습니다.

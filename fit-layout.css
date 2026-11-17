@@ -304,3 +304,10 @@ body:has(#lab.portrait-view:not([hidden])),body:has(#lab.portrait-view:not([hidd
 #lab .native-controls>.native-actions{position:sticky;top:0;z-index:12;margin:0 0 14px!important;padding:8px 0 12px!important;border-top:0;background:#050709;display:block}
 #lab .native-controls>.native-actions #nativeSave{display:block;width:100%;min-height:38px;font-size:11px}
 .book-toolbar[hidden]{display:none!important}
+
+/* Page turn (62): the leaf is one WebGL mesh. A static shadow on the real pages replaces the
+   per-frame drop-shadow filter that forced the whole 3D area to be re-blurred every frame. */
+.book{filter:none!important}
+.book-leaf:not(.blank){box-shadow:0 8px 12px rgba(0,0,0,.32)}
+.turn-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9;display:block}
+.turn-canvas[hidden]{display:none}
