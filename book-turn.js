@@ -4,9 +4,8 @@
  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
  async function prepare(direction){
   if(busy||spread+direction<0||spread+direction>20)return null;
-  busy=true;const original=spread,old=spreadPages(spread),next=spreadPages(spread+direction);
-  await window.prepareBookPages?.([...new Set([...old,...next].filter(Boolean))]);
-  await Promise.all(next.filter(Boolean).map(n=>{const im=new Image();im.src=pageURL(n);return im.decode().catch(()=>{})}));
+  busy=true;book.setAttribute('aria-busy','true');const original=spread,old=spreadPages(spread),next=spreadPages(spread+direction);
+  await Promise.all(next.filter(Boolean).map(n=>{const im=new Image();im.src=pageURL(n);return Promise.race([im.decode().catch(()=>{}),new Promise(resolve=>setTimeout(resolve,1200))])}));
   const front=direction>0?old[1]:old[0],back=direction>0?next[0]:next[1],width=book.getBoundingClientRect().width/2,segments=44,step=width/segments;
   paintImage('leftPage',direction>0?old[0]:next[0]);paintImage('rightPage',direction>0?next[1]:old[1]);
   leaf.replaceChildren();leaf.className='flip-leaf curled';leaf.hidden=false;book.classList.add('is-turning');
@@ -31,7 +30,7 @@
    strip.style.setProperty('--shade',String(bend*(.018+.04*u)));x=nx;z=nz;
   });m.shadow.style.opacity=String(bend*.24);$('book').style.setProperty('--spine-shadow',String(.10+bend*.025));
  }
- function finish(m,commit){cancelAnimationFrame(m.frame);spread=m.original+(commit?m.direction:0);leaf.hidden=true;leaf.replaceChildren();leaf.className='flip-leaf';m.shadow.remove();book.classList.remove('is-turning');book.style.removeProperty('--spine-shadow');motion=null;busy=false;updateBook()}
+ function finish(m,commit){cancelAnimationFrame(m.frame);spread=m.original+(commit?m.direction:0);leaf.hidden=true;leaf.replaceChildren();leaf.className='flip-leaf';m.shadow.remove();book.classList.remove('is-turning');book.style.removeProperty('--spine-shadow');motion=null;busy=false;book.setAttribute('aria-busy','false');updateBook()}
  function tick(now){const m=motion;if(!m)return;const dt=m.last?Math.min(.032,(now-m.last)/1000):1/60;m.last=now;
   const stiffness=m.held?105:85,damping=m.held?20:17;
   m.v+=(stiffness*(m.target-m.p)-damping*m.v)*dt;m.p+=m.v*dt;

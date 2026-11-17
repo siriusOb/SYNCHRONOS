@@ -17,7 +17,7 @@ async function pump(){
    await page.render({canvasContext:canvas.getContext('2d'),viewport,background:'rgb(255,255,255)'}).promise;
    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('The PDF page could not be rendered.');
    const existing=cache.get(job.n);
-   if(existing&&existing.width>job.width){job.resolve(existing)}else{const entry={url:URL.createObjectURL(blob),width:job.width};if(existing)URL.revokeObjectURL(existing.url);touch(job.n,entry);job.resolve(entry)}
+   if(existing&&existing.width>job.width){job.resolve(existing)}else{const entry={url:URL.createObjectURL(blob),width:job.width};if(existing)setTimeout(()=>URL.revokeObjectURL(existing.url),30000);touch(job.n,entry);job.resolve(entry)}
    page.cleanup();trim();
   }catch(error){job.reject(error)}finally{pending.delete(job.key);if(canvas){canvas.width=canvas.height=1}}
  }

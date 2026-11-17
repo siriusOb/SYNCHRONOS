@@ -1,4 +1,4 @@
-SYNCHRONOS — 전체 웹사이트 / COMPLETE 58 / FAST LOADING
+SYNCHRONOS — 전체 웹사이트 / COMPLETE 59 / STABLE RECOVERY
 
 이 폴더 하나에 실행에 필요한 웹 파일, 이미지, 그래픽, 서체, 원본 책·포스터 PDF, PDF 표시 라이브러리가 모두 들어 있습니다.
 
@@ -23,4 +23,6 @@ VARIANT: 그래픽 추가·선택·이동, 개별 옵션 조절, 상단 고정 P
 American Typewriter Regular / X Typewriter Regular 웹 서체 포함.
 서체·종이 질감의 출처 표기는 assets/fonts/FONT-NOTICE.txt 및 assets/TEXTURE-CREDITS.txt 참조.
 
-로딩 개선 58: 아틀라스·질문·선택 목록에는 가벼운 미리보기를 사용하고, 원본 벡터는 선택한 그래픽만 읽습니다. 결과와 PNG 저장은 원본 벡터를 유지합니다.
+복구 59: 검증된 질문·결과 처리로 복원. 책 넘김이 PDF 고해상도 처리 완료를 기다리지 않도록 수정. 미리보기와 원본 벡터·PDF를 모두 포함합니다.
+
+확인: 책 앞뒤 넘김 및 마지막 장 이동, 6문항을 두 차례 완료, 생성 화면 이후 결과, 2800×1800 PNG 미리보기, 재시험, Variant 이동 및 개별 impressions 조절.
