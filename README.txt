@@ -1,4 +1,4 @@
-SYNCHRONOS — COMPLETE 60 / RESPONSIVE READER & PORTRAIT (62 / SEAMLESS TURN)
+SYNCHRONOS — COMPLETE 60 / RESPONSIVE READER & PORTRAIT (63 / SHADED TURN)
 
 실행에 필요한 웹 파일, 이미지, 원본 벡터, 웹 서체, 원본 책·포스터 PDF를 포함한 전체본입니다.
 
@@ -14,6 +14,11 @@ python3 -m http.server 4174 --bind 127.0.0.1
 GitHub Pages에는 index.html, CSS·JS·MJS 파일과 assets 전체를 같은 위치에 올립니다.
 특히 이번에 추가된 assets/book-pages 폴더 40개 파일을 포함해야 합니다.
 원본 PDF와 벡터 및 fonts 폴더도 모두 포함되어 있습니다.
+
+개선 63 (넘김 중 음영):
+- 넘어가는 책장에 휘어짐에 따른 입체 음영(빛 방향, 제본선 쪽 접힘 그늘, 바깥쪽으로 갈수록 어두워짐)을 적용했습니다.
+- 책장 모양을 따라가는 그림자가 아래 페이지에 부드럽게 드리워집니다. 높이 들릴수록 진하고 멀어질수록 옅어집니다.
+- 넘김이 시작·종료되는 순간에는 음영이 0으로 수렴해 정지 상태와 이어집니다.
 
 개선 62 (책장 넘김 — 이음새·틈·끊김 제거):
 - 넘어가는 책장을 24개 조각이 아닌 하나의 연속된 곡면(WebGL)으로 그립니다. 조각 사이 이음새와 틈이 생기지 않습니다.

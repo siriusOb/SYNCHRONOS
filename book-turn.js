@@ -20,32 +20,41 @@
  /* ---------- shaders ---------- */
  const VS=`#version 300 es
  in vec3 aPos;in vec2 aUV;in vec3 aNor;
- uniform vec2 uBook;uniform float uD;
- out vec2 vUV;out vec3 vNor;
+ uniform vec2 uBook;uniform float uD;uniform float uMode;uniform vec2 uLs;
+ out vec2 vUV;out vec3 vNor;out float vH;
  void main(){
-  float k=uD/(uD-aPos.z);
-  float sx=uBook.x*.5+aPos.x*k;
-  float sy=uBook.y*.5+(aPos.y-uBook.y*.5)*k;
-  gl_Position=vec4(sx/uBook.x*2.-1.,1.-sy/uBook.y*2.,-aPos.z/(uD*2.),1.);
+  vec3 P=aPos;vH=P.z;
+  if(uMode>.5){P.x+=P.z*uLs.x;P.y+=P.z*uLs.y;P.z=0.;}
+  float k=uD/(uD-P.z);
+  float sx=uBook.x*.5+P.x*k;
+  float sy=uBook.y*.5+(P.y-uBook.y*.5)*k;
+  gl_Position=vec4(sx/uBook.x*2.-1.,1.-sy/uBook.y*2.,-P.z/(uD*2.),1.);
   vUV=aUV;vNor=aNor;
  }`;
  const FS=`#version 300 es
  precision highp float;
- in vec2 vUV;in vec3 vNor;
+ in vec2 vUV;in vec3 vNor;in float vH;
  uniform sampler2D uF,uB,uP;
- uniform float uDir,uHasF,uHasB,uShade,uGW;
+ uniform float uDir,uHasF,uHasB,uShade,uGW,uMode,uSA;
  uniform vec2 uSize;
  out vec4 o;
  void main(){
+  float u=vUV.x,v=vUV.y;
+  if(uMode>.5){
+   float a=uSA*smoothstep(0.,uSize.x*.05,vH)*(1.-smoothstep(uSize.x*.45,uSize.x*1.25,vH));
+   a*=smoothstep(0.,.08,v)*smoothstep(1.,.92,v)*smoothstep(1.,.86,u);
+   o=vec4(0.,0.,0.,a);return;
+  }
   bool fr=gl_FrontFacing;if(uDir<0.)fr=!fr;
-  float u=vUV.x,v=vUV.y;vec3 c;vec3 n=normalize(vNor);
+  vec3 c;vec3 n=normalize(vNor);
   if(fr){if(uHasF<.5)discard;c=texture(uF,vec2(uDir>0.?u:1.-u,v),-.6).rgb;}
   else{if(uHasB<.5)discard;c=texture(uB,vec2(uDir>0.?1.-u:u,v),-.6).rgb;n=-n;}
   vec3 L=normalize(vec3(-.32,-.46,.83));
   float f=clamp(dot(n,L)/L.z,0.,1.);
-  float light=1.-.24*(1.-f);
+  float light=1.-.30*(1.-f);
   float g=.105*max(0.,1.-u/uGW);
-  light*=(1.-g)*(1.-.05*uShade*u);
+  light*=(1.-g)*(1.-.12*uShade*u)*(1.-.16*uShade*exp(-u*7.));
+  if(!fr)light*=.96;
   float paper=1.-.055*(1.-texture(uP,vec2(u*uSize.x,v*uSize.y)/vec2(${PAPER[0]}.,${PAPER[1]}.)).r);
   o=vec4(c*light*paper,1.);
  }`;
@@ -54,7 +63,7 @@
  try{gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog))}
  catch(e){console.warn('Page turn: WebGL shader failed, using DOM fallback',e);canvas.remove();const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-62-gl';document.body.append(s);return}
  gl.useProgram(prog);
- const U={};for(const k of ['uBook','uD','uDir','uHasF','uHasB','uShade','uGW','uSize','uF','uB','uP'])U[k]=gl.getUniformLocation(prog,k);
+ const U={};for(const k of ['uBook','uD','uDir','uHasF','uHasB','uShade','uGW','uSize','uF','uB','uP','uMode','uSA','uLs'])U[k]=gl.getUniformLocation(prog,k);
 
  /* ---------- mesh ---------- */
  const NV=(COLS+1)*(ROWS+1),pos=new Float32Array(NV*3),nor=new Float32Array(NV*3),uv=new Float32Array(NV*2),idx=new Uint16Array(COLS*ROWS*6);
@@ -145,8 +154,12 @@
   gl.uniform2f(U.uBook,book.clientWidth,H);gl.uniform1f(U.uD,persp);gl.uniform1f(U.uDir,dir);
   gl.uniform1f(U.uHasF,m.tf?1:0);gl.uniform1f(U.uHasB,m.tb?1:0);gl.uniform1f(U.uShade,bend);gl.uniform1f(U.uGW,16/W);gl.uniform2f(U.uSize,W,H);
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  /* cast shadow: the sheet projected onto the pages beneath it (stronger where it is higher) */
+  gl.disable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendEquation(gl.MAX);
+  gl.uniform1f(U.uMode,1);gl.uniform1f(U.uSA,.36);gl.uniform2f(U.uLs,.34,.52);
   gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
-  if(m.shadow)m.shadow.style.opacity=String(bend*.22);
+  gl.disable(gl.BLEND);gl.enable(gl.DEPTH_TEST);gl.uniform1f(U.uMode,0);
+  gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
  }
 
  /* ---------- turn lifecycle ---------- */
@@ -163,7 +176,6 @@
  async function begin(m,tf,tb){
   if(m.dead)return;
   m.tf=tf;m.tb=tb;sizeCanvas();
-  const sh=document.createElement('div');sh.className='page-cast-shadow';sh.style.left=m.direction>0?'50%':'0';if(m.direction<0)sh.style.transform='scaleX(-1)';book.append(sh);m.shadow=sh;
   drawMesh(m,0);canvas.hidden=false;book.classList.add('is-turning');
   /* swap the stationary pages only after the leaf already covers the old one */
   paintImage('leftPage',m.direction>0?m.old[0]:m.next[0]);paintImage('rightPage',m.direction>0?m.next[1]:m.old[1]);
