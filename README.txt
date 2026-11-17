@@ -1,25 +1,24 @@
-SYNCHRONOS — Local website
-Open http://127.0.0.1:4173/
-To run from this folder: python3 -m http.server 4173 --bind 127.0.0.1
-For GitHub Pages, place index.html, CSS/JS and assets at the repository root.
+SYNCHRONOS — 전체 웹사이트 / COMPLETE 57
 
-ATLAS: original postcards on an explorable map, linked to condition notes and original book references.
-ARCHIVE: 40-page PDF book with flexible drag/release page turns, 12 postcards and poster. Contents scroll independently. Artwork proportions are retained.
-SELF-PORTRAIT: six everyday observations select original disease graphics. The final result is an abstract pattern containing only those six selections: different sizes, rotations, spacing and overlap. No human figure is included in the result. REARRANGE changes the layout while keeping the selections; OVERLAP changes density. The seeded layout stays identical between preview and export. No health condition or diagnostic score is inferred.
-VARIANT: a multi-object vector canvas. MY PORTRAIT is the first library item after completing the quiz and opens the current result as six independently editable graphics. Switch to another original source and back without losing the current canvas arrangement. ADD GRAPHIC opens the original-artboard library and appends an independently editable object.
-Click a graphic or its thumbnail to select it; drag to move. The inspector changes only that object: front/back colour and surface, registration offset, scale, rotation, opacity and impressions. Impressions use direct minus/plus buttons and alternate basic/variation for disease sources. Back/front buttons adjust stacking order; remove deletes the selected canvas object. Each source canvas retains its own arrangement while the page remains open. Save PNG or SVG before reloading to retain an output.
-Selection bounds appear only in the editor, never in exported PNG/SVG. Native vector path geometry and artwork proportions are retained.
+이 폴더 하나에 실행에 필요한 웹 파일, 이미지, 그래픽, 서체, 원본 책·포스터 PDF, PDF 표시 라이브러리가 모두 들어 있습니다.
 
-Source: 17 separate PDF-compatible AI vector artboards, with original paths and proportions. Disease basic/variation pairings: 1/6, 2/7, 3/8, 4/9, 5/10. Artboards 11–16 are human forms; 17 is Homo Synchronos, available in the opening sheet and Variant source selector. Quiz results use disease artboards only.
+1. ZIP을 새 위치에 압축 해제합니다. 기존 패치 폴더와 합치지 않아도 됩니다.
+2. 폴더 안 START.command를 더블클릭합니다. 브라우저가 자동으로 열립니다.
+3. 실행 중에는 열린 터미널 창을 유지합니다. Control+C로 종료할 수 있습니다.
 
-Questionnaire: user-supplied parchment PNG, no four-human watermark. X Typewriter Regular for questions and answers. No white text halo. Default graphic presentation matches the collected-thumbnail grey treatment; hover/focus reveals only original cyan (#00aeef) or magenta (#ec008c). No additional offset contour is displayed.
+START.command가 열리지 않으면 터미널에서 이 폴더로 이동한 뒤 아래 명령을 실행합니다.
+python3 -m http.server 4174 --bind 127.0.0.1
+그런 다음 http://127.0.0.1:4174/ 를 엽니다.
 
-Fonts: Regular WOFF files for American Typewriter and X Typewriter are bundled under assets/fonts and referenced before local fallbacks. Original font licensing terms apply to public distribution; see assets/fonts/FONT-NOTICE.txt. Korean original text uses system sans-serif fallbacks. Original book typography remains in its page images.
+index.html을 파일로 직접 열면 PDF·그래픽 데이터 읽기가 차단될 수 있으므로 위 로컬 링크로 확인합니다.
 
-Paper texture on book leaves: Natural Paper by Mihaela Hinayon via Subtle Patterns / Transparent Textures. Separate low-opacity overlay; original 700 x 1400 book images are unfiltered. See assets/TEXTURE-CREDITS.txt.
+GitHub Pages 발행 시:
+이 폴더 내부의 index.html, CSS·JS·MJS 파일과 assets 폴더를 같은 위치에 올립니다. assets 폴더를 나누거나 이름을 변경하지 않습니다. START.command와 이 안내 파일은 웹 실행에 필수가 아닙니다.
 
-RESULT SHORTCUT: PORTRAIT VARIANT opens the completed result directly in Variant with MY PORTRAIT selected.
+ATLAS: 12개의 원본 엽서와 책·질병 설명의 연결.
+ARCHIVE: 원본 40쪽 책 PDF와 포스터 PDF. 책의 넘김 모션 유지.
+SELF-PORTRAIT: 6개의 선택, 그래픽 순차 등장, 마지막 등장 후 1초 대기, 초상 결과 및 PNG 저장.
+VARIANT: 그래픽 추가·선택·이동, 개별 옵션 조절, 상단 고정 PNG 저장.
 
-LAYOUT REFINEMENTS: main headings match ATLAS, ARCHIVE, SELF-PORTRAIT and VARIANT. The result-to-editor PORTRAIT VARIANT action is a separate large button beneath the artwork. Book corner arrow glyphs are removed while click/drag turning stays enabled. In Atlas dialogs, the description viewport exactly matches the left image height, scrolls independently, and keeps bottom padding. Questionnaire questions and answers are about 10–15% smaller, with narrower balanced answer text to avoid graphic-edge tangencies.
-
-VARIANT SOURCE NAMES: 11 / SURVIVOR; 12 / ORGANIZER / KING; 13 / ORGANIZER / SUBJECT; 14 / INVENTOR / MASTER; 15 / INVENTOR / OPERATIVE; 16 / COMMUNICATER. All Variant source and library labels use uppercase.
+American Typewriter Regular / X Typewriter Regular 웹 서체 포함.
+서체·종이 질감의 출처 표기는 assets/fonts/FONT-NOTICE.txt 및 assets/TEXTURE-CREDITS.txt 참조.
