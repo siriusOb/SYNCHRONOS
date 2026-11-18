@@ -8,7 +8,7 @@
  const book=$('book'),canvas=document.createElement('canvas');
  let gl=null;
  try{gl=canvas.getContext('webgl2',{antialias:true,alpha:true,premultipliedAlpha:true,depth:true,powerPreference:'high-performance'})}catch{}
- if(!gl){const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-63-fix';document.body.append(s);return}
+ if(!gl){const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-65-land';document.body.append(s);return}
 
  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
  const hi=new Set();let inner=window.bookPageURL||null;
@@ -62,7 +62,7 @@
  function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
  const prog=gl.createProgram();
  try{gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog))}
- catch(e){console.warn('Page turn: WebGL shader failed, using DOM fallback',e);canvas.remove();const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-63-fix';document.body.append(s);return}
+ catch(e){console.warn('Page turn: WebGL shader failed, using DOM fallback',e);canvas.remove();const s=document.createElement('script');s.src='book-turn-legacy.js?v=responsive-65-land';document.body.append(s);return}
  gl.useProgram(prog);
  const U={};for(const k of ['uBook','uD','uDir','uHasF','uHasB','uShade','uGW','uSize','uF','uB','uP','uMode','uSA','uLs'])U[k]=gl.getUniformLocation(prog,k);
 
@@ -188,11 +188,19 @@
  function finish(m,commit){
   if(m.dead)return;m.dead=true;cancelAnimationFrame(m.frame);
   spread=m.original+(commit?m.direction:0);
-  canvas.hidden=true;m.shadow?.remove();book.classList.remove('is-turning');
-  book.dataset.turnMs=Math.round(performance.now()-Number(book.dataset.turnStart));
-  if(motion===m)motion=null;busy=false;book.setAttribute('aria-busy','false');
+  if(motion===m)motion=null;
+  const land=()=>{
+   canvas.hidden=true;book.classList.remove('is-turning');
+   book.dataset.turnMs=Math.round(performance.now()-Number(book.dataset.turnStart));
+   busy=false;book.setAttribute('aria-busy','false');
+   if(queued){const n=Math.sign(queued);queued-=n;queueMicrotask(()=>turn(n,true))}
+  };
+  /* Put the final pages under the leaf FIRST and wait until they are decoded; only then remove the
+     canvas. Hiding it in the same frame as the image swap left a blank page for a moment. */
   updateBook();
-  if(queued){const n=Math.sign(queued);queued-=n;queueMicrotask(()=>turn(n,true))}
+  if(!m.ready){land();return}
+  const decoded=Promise.all([$('leftPage'),$('rightPage')].map(i=>i.decode?i.decode().catch(()=>{}):0));
+  Promise.race([decoded,new Promise(r=>setTimeout(r,600))]).then(()=>requestAnimationFrame(()=>requestAnimationFrame(land)));
  }
  const hermite=(s,p0,m0,p1)=>{const s2=s*s,s3=s2*s;return(2*s3-3*s2+1)*p0+(s3-2*s2+s)*m0+(-2*s3+3*s2)*p1};
  function tick(now){
