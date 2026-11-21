@@ -1,6 +1,6 @@
 /* Independent vector objects; each library canvas remembers its own arrangement. */
 window.createVariantEditor=({panel,names,getVectors,redraw})=>{
- const scenes=new Map();let current='17',selected=null,serial=0,drag=null,portraitKey='',selectedIds=new Set(),groupAngle=0,lastPalette=-1;
+ const scenes=new Map();let current='17',selected=null,serial=0,drag=null,portraitKey='',selectedIds=new Set(),groupAngle=0,lastPalette=-1,paletteHistory=[];
  const $=id=>document.getElementById(id),art=n=>`assets/previews/graphic-${String(n).padStart(2,'0')}.webp`;
  const title=n=>(n==='portrait'?'MY PORTRAIT':names[n]||(n>=6&&n<=10?names[n-5]+' / VARIATION':'GRAPHIC '+n)).toUpperCase();
  function makeObject(source,props={}){const o={id:++serial,source:+source,x:700,y:550,baseSize:780,scale:100,angle:0,front:'#ec008c',back:'#00aeef',frontStyle:'line',backStyle:'fill',offset:18,copies:1,opacity:100,...props};o.initial={...o};return o}
@@ -33,20 +33,39 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  $('objectBack').onclick=()=>{const a=scene().objects;for(let i=1;i<a.length;i++)if(selectedIds.has(a[i].id)&&!selectedIds.has(a[i-1].id))[a[i-1],a[i]]=[a[i],a[i-1]];sync();redraw()};
  $('objectFront').onclick=()=>{const a=scene().objects;for(let i=a.length-2;i>=0;i--)if(selectedIds.has(a[i].id)&&!selectedIds.has(a[i+1].id))[a[i],a[i+1]]=[a[i+1],a[i]];sync();redraw()};
  $('objectRemove').onclick=()=>{const s=scene();s.objects=s.objects.filter(o=>!selectedIds.has(o.id));select(s.objects.length?[s.objects[s.objects.length-1].id]:[]);sync();redraw()};
- // One shared palette per canvas: bright colours for the dark ground, with
- // related or complementary hues. Each object gets a distinct front/back pair.
+ // Each palette has light / medium / deep roles. Mixed-hue families include
+ // complementary, split-complementary and warm/cool combinations on a dark ground.
  const palettes=[
-  ['#00aeef','#ec008c','#b19aff'],
-  ['#36d7cf','#8d9eff','#ddbdff'],
-  ['#ff7770','#ffbd69','#fff0c7'],
-  ['#c7ee78','#38d5ba','#eff9d5'],
-  ['#62b5ff','#ffc46b','#bbdcff'],
-  ['#f68fbc','#bd9cff','#ffd0b5']
+  ['#fff0c7','#ffbd69','#e66d68'], // cream / amber / coral (reference)
+  ['#ffe0c2','#f29277','#357f87'], // apricot / coral / teal
+  ['#f6edcf','#72c8d5','#bb6265'], // ivory / aqua / muted red
+  ['#ffe6cc','#f6a579','#6873a8'], // peach / terracotta / indigo
+  ['#d9f5e4','#69c6ba','#8065a4'], // mint / teal / plum
+  ['#e3e4ff','#bba2e5','#b95b89'], // ice lavender / lilac / berry
+  ['#fff5b8','#b3cd69','#527b63'], // lemon / lime / forest
+  ['#e2f2ff','#77b7e3','#bd7350'], // ice / sky / copper
+  ['#ffd9e5','#f29cbd','#aa5978'], // blush / rose / wine
+  ['#eef1dc','#a9bc83','#667b9d'], // pale sage / olive / slate
+  ['#f8f3e8','#e3be76','#4d7ca7'], // paper / gold / blue
+  ['#ffd6db','#edac8c','#5a8e84'], // pink / peach / jade
+  ['#dcf5f2','#69c9d2','#8d69a6'], // ice mint / cyan / violet
+  ['#eee1f6','#c09ee0','#8b6297'], // pale violet / lavender / plum
+  ['#e8efd9','#a5c6a5','#b87558'], // ivory green / sage / rust
+  ['#dfe5ff','#7fa5e7','#c36086'], // periwinkle / blue / raspberry
+  ['#ffe5d1','#edb470','#3f898c'], // warm ivory / ochre / petrol
+  ['#f9e7bd','#c6b582','#7b779c']  // parchment / sand / smoky violet
  ];
+ function shuffled(values){const result=[...values];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}return result}
  $('nativeShuffle').onclick=()=>{const objects=scene().objects;if(!objects.length)return;
-  let index=Math.floor(Math.random()*palettes.length);if(index===lastPalette)index=(index+1+Math.floor(Math.random()*(palettes.length-1)))%palettes.length;lastPalette=index;
-  const palette=palettes[index];
-  for(const o of objects){const fronts=palette.filter(c=>c!==o.front);o.front=fronts[Math.floor(Math.random()*fronts.length)];const backs=palette.filter(c=>c!==o.front&&c!==o.back);o.back=backs[Math.floor(Math.random()*backs.length)]}
+  // Avoid repeating the last four palettes. Prefer a fresh set of colours even
+  // when individual objects have previously been recoloured by hand.
+  let candidates=palettes.map((p,i)=>i).filter(i=>!paletteHistory.includes(i)&&!palettes[i].some(c=>objects.some(o=>o.front===c||o.back===c)));
+  if(!candidates.length)candidates=palettes.map((p,i)=>i).filter(i=>i!==lastPalette);
+  const index=candidates[Math.floor(Math.random()*candidates.length)],palette=palettes[index];lastPalette=index;paletteHistory.push(index);if(paletteHistory.length>4)paletteHistory.shift();
+  // Deal all three tonal roles before repeating any of them. Unlike independent
+  // random picks, a canvas with 3+ objects cannot collapse to just one or two tones.
+  const roleOrder=shuffled([0,1,2]),roles=shuffled(objects.map((o,i)=>roleOrder[i%3]));
+  objects.forEach((o,i)=>{const role=roles[i];o.front=palette[role];const backs=palette.filter((c,j)=>j!==role&&c!==o.back);o.back=backs[Math.floor(Math.random()*backs.length)]});
   select(objects.map(o=>o.id));sync();redraw();
  };
  $('nativeSave').onclick=()=>$('save').click();$('addGraphic').onclick=()=>{$('graphicLibrary').hidden=!$('graphicLibrary').hidden};$('closeLibrary').onclick=()=>$('graphicLibrary').hidden=true;
