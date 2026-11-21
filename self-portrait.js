@@ -61,12 +61,12 @@
  return elements}
  function plan(){return portrait?resultPattern():editor.plan()}
  function fit(g,size){return size/Math.max(g.width,g.height)}
- window.nativeExportSnapshot=()=>{
+ window.nativeExportSnapshot=(format='graphic')=>{
   const model=portrait?null:editor.exportState();
   return {origin:portrait||model.source==='portrait'?'portrait':'study',portraitTitle:window.portraitRecord?.title||null,
    dimensions:portrait?[1400,900]:editor.frame(),background:portrait?'#000000':'#080c0f',
    items:portrait?resultPattern().map(e=>({source:e.id,x:e.x,y:e.y,size:e.size,angle:e.angle||0,impressions:1,opacity:e.alpha})):model.objects,
-   elements:plan().map(e=>({...e}))};
+   elements:(portrait?resultPattern():format==='receipt'?editor.receiptPlan():editor.plan()).map(e=>({...e}))};
  };
  window.nativeExportName=()=>portrait?'synchronos-pattern':'synchronos-variant';
  window.nativeDimensions=()=>portrait?[1400,900]:editor.frame();

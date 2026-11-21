@@ -107,7 +107,7 @@
   menu.hidden=false;position();menu.querySelector('button').focus();
  }
  async function createExport(format){
-  if(preparing)return;const snapshot=window.nativeExportSnapshot?.();if(!snapshot)return;
+  if(preparing)return;const snapshot=window.nativeExportSnapshot?.(format);if(!snapshot)return;
   const button=anchor||trigger(),label=button?.innerHTML;closeMenu();preparing=true;
   if(button){button.disabled=true;button.textContent='PREPARING PNG…'}
   try{

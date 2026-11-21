@@ -75,7 +75,11 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  };
  $('nativeSave').onclick=()=>$('save').click();$('addGraphic').onclick=()=>{$('graphicLibrary').hidden=!$('graphicLibrary').hidden};$('closeLibrary').onclick=()=>$('graphicLibrary').hidden=true;
  for(let n=1;n<=17;n++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Add '+numbered(n));b.innerHTML=`<img src="${art(n)}" alt="" loading="lazy" decoding="async"><span>${numbered(n)}</span>`;b.onclick=()=>{const s=scene(),i=s.objects.length,o=makeObject(n,{x:s.width/2+((i%3)-1)*70,y:s.height/2+((i%2)*2-1)*45,baseSize:440,frontStyle:'native',backStyle:'off',front:i%2?'#ec008c':'#00aeef'});s.objects.push(o);select([o.id]);$('graphicLibrary').hidden=true;sync();redraw()};$('graphicLibraryItems').append(b)}
- function objectElements(o){
+ function objectElements(o){const list=[],size=o.baseSize*o.scale/100,rotation=o.angle*Math.PI/180;for(let i=0;i<o.copies;i++){const pair=n=>n<=5?n+5:n<=10?n-5:n,primary=i%2?pair(o.source):o.source;const sx=(i-(o.copies-1)/2)*size*.42,sy=o.copies===1?0:i%2?size*.035:-size*.035,x=o.x+sx*Math.cos(rotation)-sy*Math.sin(rotation),y=o.y+sx*Math.sin(rotation)+sy*Math.cos(rotation);
+  if(o.backStyle!=='off')list.push({objectId:o.id,id:pair(primary),x:x+o.offset,y:y+o.offset*.4,size,colour:o.back,style:o.backStyle,alpha:o.opacity/100,angle:rotation});
+  list.push({objectId:o.id,id:primary,x:x-(o.backStyle==='off'?0:o.offset),y:y-(o.backStyle==='off'?0:o.offset*.4),size,colour:o.front,style:o.frontStyle,alpha:o.opacity/100,angle:rotation,minStroke:.72});
+ }return list}
+ function receiptElements(o){
   const fronts=[],backs=[],size=o.baseSize*o.scale/100,rotation=o.angle*Math.PI/180,cos=Math.cos(rotation),sin=Math.sin(rotation),vectors=getVectors(),backOn=o.backStyle!=='off';
   const pair=n=>n<=5?n+5:n<=10?n-5:n;
   const dimensions=id=>{const g=vectors[id-1];return g?{width:size*g.width/Math.max(g.width,g.height),height:size*g.height/Math.max(g.width,g.height)}:{width:size,height:size}};
@@ -97,6 +101,7 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
   return [...backs,...fronts];
  }
  function plan(){return scene().objects.flatMap(objectElements)}
+ function receiptPlan(){return scene().objects.flatMap(receiptElements)}
  function bounds(o){const vectors=getVectors();let left=Infinity,right=-Infinity,top=Infinity,bottom=-Infinity;for(const e of objectElements(o)){const g=vectors[e.id-1];if(!g)continue;const scale=e.size/Math.max(g.width,g.height),w=g.width*scale,h=g.height*scale,a=e.angle||0,ww=(Math.abs(Math.cos(a))*w+Math.abs(Math.sin(a))*h)/2,hh=(Math.abs(Math.sin(a))*w+Math.abs(Math.cos(a))*h)/2;left=Math.min(left,e.x-ww);right=Math.max(right,e.x+ww);top=Math.min(top,e.y-hh);bottom=Math.max(bottom,e.y+hh)}return{left,right,top,bottom}}
  function point(e){const canvas=$('canvas'),r=canvas.getBoundingClientRect(),s=scene(),scale=Math.min(r.width/s.width,r.height/s.height),left=r.left+(r.width-s.width*scale)/2,top=r.top+(r.height-s.height*scale)/2;return{x:(e.clientX-left)/scale,y:(e.clientY-top)/scale}}
  // Selection geometry follows the object's rotation. A group uses one frame
@@ -160,7 +165,7 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  return{
   setPortrait(elements,key,frame){if(key!==portraitKey){portraitKey=key;scenes.set('portrait',{width:frame[0],height:frame[1],objects:elements.map(e=>makeObject(e.id,{x:e.x,y:e.y,baseSize:e.size,angle:(e.angle||0)*180/Math.PI,front:e.colour,frontStyle:e.style,backStyle:'off',opacity:Math.round(e.alpha*100)}))})}const option=$('nativeSource').querySelector('option[value="portrait"]');option.disabled=false;option.textContent='MY PORTRAIT'},
   exportState:()=>({source:current,objects:scene().objects.map(o=>({id:o.id,source:o.source,x:o.x,y:o.y,size:o.baseSize*o.scale/100,angle:o.angle*Math.PI/180,impressions:o.copies,opacity:o.opacity/100}))}),
-  enter(preferred){chooseCanvas(preferred!==undefined?preferred:current)},plan,frame:()=>[scene().width,scene().height],pointerDown,pointerMove,pointerUp,paintSelection,
+  enter(preferred){chooseCanvas(preferred!==undefined?preferred:current)},plan,receiptPlan,frame:()=>[scene().width,scene().height],pointerDown,pointerMove,pointerUp,paintSelection,
   wheel(e){if(targets().length){for(const o of targets())o.scale=Math.max(20,Math.min(240,o.scale-Math.sign(e.deltaY)*5));redraw()}},
   label:()=>title(current).toUpperCase(),status:()=>scene().objects.length+' GRAPHICS / '+(targets().length>1?'ALL '+targets().length+' SELECTED':active()?'SELECTED '+String(scene().objects.indexOf(active())+1).padStart(2,'0'):'CLICK TO SELECT')
  };
