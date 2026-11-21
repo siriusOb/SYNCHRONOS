@@ -62,9 +62,9 @@
  function inventoryStamp(k,row,x,y,w,h){
   if(row.sources.length<2){window.renderNativeStamp(k,row.sources[0],x,y,w,h);return}
   const front=row.sources.includes(row.frontSource)?row.frontSource:row.sources[0],rear=row.sources.filter(id=>id!==front);
-  const shift=Math.min(w,h)*.04;
-  for(const id of rear){k.save();k.globalAlpha=.38;window.renderNativeStamp(k,id,x+shift,y+shift,w-shift*2,h-shift*2);k.restore()}
-  k.save();k.globalAlpha=.92;window.renderNativeStamp(k,front,x-shift*.5,y-shift*.5,w-shift*2,h-shift*2);k.restore();
+  const stampW=w*.8,stampH=h*.84,offsetX=w*.2,offsetY=h*.16;
+  for(const id of rear){k.save();k.globalAlpha=.38;window.renderNativeStamp(k,id,x+offsetX,y+offsetY,stampW,stampH);k.restore()}
+  k.save();k.globalAlpha=.92;window.renderNativeStamp(k,front,x,y,stampW,stampH);k.restore();
  }
  function receipt(snapshot,metadata){
   const art=graphic(snapshot,true),measuring=document.createElement('canvas').getContext('2d');
