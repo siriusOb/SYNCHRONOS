@@ -20,14 +20,19 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  const props=['front','back','frontStyle','backStyle','offset','opacity'];
  function sync(){const o=active();$('nativeSource').value=current;$('objectOptions').disabled=!scene().objects.length;$('nativeReset').disabled=!o;for(const id of ['objectBack','objectFront','objectRemove'])$(id).disabled=!o;$('selectedObjectTitle').textContent=targets().length>1?'ALL GRAPHICS / '+targets().length+' SELECTED':o?'SELECTED '+String(scene().objects.indexOf(o)+1).padStart(2,'0')+' / '+title(o.source):'SELECT A GRAPHIC';$('objectCount').textContent=scene().objects.length;
   for(const key of props){const el=$('native'+key[0].toUpperCase()+key.slice(1));el.disabled=!o;if(o)el.value=o[key];if(el.type==='range')syncRangeFill(el)}
-  $('nativeBack').disabled=!o||o.backStyle==='off';$('nativeOffset').disabled=!o||o.backStyle==='off';
-  if(o){$('nativeOffsetValue').textContent=o.offset;$('nativeOpacityValue').textContent=o.opacity+'%';$('nativeCopies').textContent=o.copies;$('copiesMinus').disabled=o.copies<=1;$('copiesPlus').disabled=o.copies>=8}
+  const selectedBacks=targets().filter(item=>item.backStyle!=='off');
+  $('nativeBack').disabled=!selectedBacks.length;$('nativeOffset').disabled=!selectedBacks.length;
+  if(selectedBacks.length){$('nativeOffset').value=selectedBacks[0].offset;syncRangeFill($('nativeOffset'))}
+  for(const key of ['frontStyle','backStyle']){const el=$('native'+key[0].toUpperCase()+key.slice(1)),mixed=new Set(targets().map(item=>item[key])).size>1;
+   if(mixed){if(!el.querySelector('option[value="mixed"]')){const option=document.createElement('option');option.value='mixed';option.disabled=true;option.textContent='MIXED';el.append(option)}el.value='mixed'}
+  }
+  if(o){const offsets=selectedBacks.length?selectedBacks.map(item=>item.offset):[o.offset];$('nativeOffsetValue').textContent=new Set(offsets).size>1?'MIXED':offsets[0];$('nativeOpacityValue').textContent=o.opacity+'%';$('nativeCopies').textContent=o.copies;$('copiesMinus').disabled=o.copies<=1;$('copiesPlus').disabled=o.copies>=8}
   $('copiesMinus').disabled=!o||o.copies<=1;$('copiesPlus').disabled=!o||o.copies>=8;
   const list=$('objectList');list.replaceChildren();scene().objects.forEach((item,i)=>{const b=document.createElement('button');b.type='button';b.className='object-chip';b.setAttribute('aria-pressed',String(selectedIds.has(item.id)));b.setAttribute('aria-label',`Select graphic ${i+1}: ${title(item.source)}`);b.innerHTML=`<img src="${art(item.source)}" alt=""><span>${String(i+1).padStart(2,'0')}</span>`;b.onclick=()=>{select([item.id]);sync();redraw()};list.append(b)})
  }
  function chooseCanvas(value){current=String(value);const s=scene();select(s.objects.length?[s.objects[s.objects.length-1].id]:[]);$('graphicLibrary').hidden=true;sync();redraw()}
  $('nativeSource').onchange=e=>chooseCanvas(e.target.value);
- props.forEach(key=>{$('native'+key[0].toUpperCase()+key.slice(1)).oninput=e=>{const o=active();if(!o)return;for(const item of targets())item[key]=['offset','opacity'].includes(key)?+e.target.value:e.target.value;sync();redraw()}});
+ props.forEach(key=>{$('native'+key[0].toUpperCase()+key.slice(1)).oninput=e=>{const o=active();if(!o)return;for(const item of targets()){if(key==='offset'&&item.backStyle==='off')continue;item[key]=['offset','opacity'].includes(key)?+e.target.value:e.target.value;}sync();redraw()}});
  $('copiesMinus').onclick=()=>{const o=active();if(o&&o.copies>1){for(const item of targets())item.copies=Math.max(1,item.copies-1);sync();redraw()}};$('copiesPlus').onclick=()=>{const o=active();if(o&&o.copies<8){for(const item of targets())item.copies=Math.min(8,item.copies+1);sync();redraw()}};
  $('nativeReset').onclick=()=>{const o=active();if(o){for(const item of targets()){const initial=item.initial;Object.assign(item,initial);item.initial=initial}groupAngle=0;sync();redraw()}};
  $('objectBack').onclick=()=>{const a=scene().objects;for(let i=1;i<a.length;i++)if(selectedIds.has(a[i].id)&&!selectedIds.has(a[i-1].id))[a[i-1],a[i]]=[a[i],a[i-1]];sync();redraw()};
@@ -70,10 +75,27 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  };
  $('nativeSave').onclick=()=>$('save').click();$('addGraphic').onclick=()=>{$('graphicLibrary').hidden=!$('graphicLibrary').hidden};$('closeLibrary').onclick=()=>$('graphicLibrary').hidden=true;
  for(let n=1;n<=17;n++){const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Add '+numbered(n));b.innerHTML=`<img src="${art(n)}" alt="" loading="lazy" decoding="async"><span>${numbered(n)}</span>`;b.onclick=()=>{const s=scene(),i=s.objects.length,o=makeObject(n,{x:s.width/2+((i%3)-1)*70,y:s.height/2+((i%2)*2-1)*45,baseSize:440,frontStyle:'native',backStyle:'off',front:i%2?'#ec008c':'#00aeef'});s.objects.push(o);select([o.id]);$('graphicLibrary').hidden=true;sync();redraw()};$('graphicLibraryItems').append(b)}
- function objectElements(o){const list=[],size=o.baseSize*o.scale/100,rotation=o.angle*Math.PI/180;for(let i=0;i<o.copies;i++){const pair=n=>n<=5?n+5:n<=10?n-5:n,primary=i%2?pair(o.source):o.source;const sx=(i-(o.copies-1)/2)*size*.42,sy=o.copies===1?0:i%2?size*.035:-size*.035,x=o.x+sx*Math.cos(rotation)-sy*Math.sin(rotation),y=o.y+sx*Math.sin(rotation)+sy*Math.cos(rotation);
-  if(o.backStyle!=='off')list.push({objectId:o.id,id:pair(primary),x:x+o.offset,y:y+o.offset*.4,size,colour:o.back,style:o.backStyle,alpha:o.opacity/100,angle:rotation});
-  list.push({objectId:o.id,id:primary,x:x-(o.backStyle==='off'?0:o.offset),y:y-(o.backStyle==='off'?0:o.offset*.4),size,colour:o.front,style:o.frontStyle,alpha:o.opacity/100,angle:rotation,minStroke:.72});
- }return list}
+ function objectElements(o){
+  const fronts=[],backs=[],size=o.baseSize*o.scale/100,rotation=o.angle*Math.PI/180,cos=Math.cos(rotation),sin=Math.sin(rotation),vectors=getVectors(),backOn=o.backStyle!=='off';
+  const pair=n=>n<=5?n+5:n<=10?n-5:n;
+  const dimensions=id=>{const g=vectors[id-1];return g?{width:size*g.width/Math.max(g.width,g.height),height:size*g.height/Math.max(g.width,g.height)}:{width:size,height:size}};
+  for(let i=0;i<o.copies;i++){
+   const primary=i%2?pair(o.source):o.source,front=dimensions(primary),back=dimensions(pair(primary));
+   // Repeated impressions remain a compact overlapping stack when BACK is on.
+   // The old fixed scene-unit offset could separate small or slender graphics.
+   const spacing=backOn?Math.min(front.width,back.width)*.16:size*.42;
+   const sx=(i-(o.copies-1)/2)*spacing,sy=o.copies===1?0:backOn?Math.sin(i*1.7)*size*.025:(i%2?size*.035:-size*.035);
+   const x=o.x+sx*cos-sy*sin,y=o.y+sx*sin+sy*cos;
+   const shortest=Math.min(front.width,front.height,back.width,back.height);
+   const separation=backOn?shortest*.12*Math.max(0,Math.min(65,o.offset))/65:0;
+   const ox=(separation*cos-separation*.4*sin)/2,oy=(separation*sin+separation*.4*cos)/2,alpha=o.opacity/100;
+   // Keep the rear stack at half strength even when many impressions coincide.
+   if(backOn)backs.push({objectId:o.id,id:pair(primary),x:x+ox,y:y+oy,size,colour:o.back,style:o.backStyle,alpha:1-Math.pow(1-alpha*.5,1/o.copies),angle:rotation});
+   fronts.push({objectId:o.id,id:primary,x:x-ox,y:y-oy,size,colour:o.front,style:o.frontStyle,alpha:alpha*(backOn?(o.frontStyle==='fill'?.88:.95):1),angle:rotation,minStroke:.72});
+  }
+  // Every rear impression is drawn beneath every front impression of this object.
+  return [...backs,...fronts];
+ }
  function plan(){return scene().objects.flatMap(objectElements)}
  function bounds(o){const vectors=getVectors();let left=Infinity,right=-Infinity,top=Infinity,bottom=-Infinity;for(const e of objectElements(o)){const g=vectors[e.id-1];if(!g)continue;const scale=e.size/Math.max(g.width,g.height),w=g.width*scale,h=g.height*scale,a=e.angle||0,ww=(Math.abs(Math.cos(a))*w+Math.abs(Math.sin(a))*h)/2,hh=(Math.abs(Math.sin(a))*w+Math.abs(Math.cos(a))*h)/2;left=Math.min(left,e.x-ww);right=Math.max(right,e.x+ww);top=Math.min(top,e.y-hh);bottom=Math.max(bottom,e.y+hh)}return{left,right,top,bottom}}
  function point(e){const canvas=$('canvas'),r=canvas.getBoundingClientRect(),s=scene(),scale=Math.min(r.width/s.width,r.height/s.height),left=r.left+(r.width-s.width*scale)/2,top=r.top+(r.height-s.height*scale)/2;return{x:(e.clientX-left)/scale,y:(e.clientY-top)/scale}}
