@@ -137,6 +137,7 @@ window.createVariantEditor=({panel,names,getVectors,redraw})=>{
  chooseCanvas('17');
  return{
   setPortrait(elements,key,frame){if(key!==portraitKey){portraitKey=key;scenes.set('portrait',{width:frame[0],height:frame[1],objects:elements.map(e=>makeObject(e.id,{x:e.x,y:e.y,baseSize:e.size,angle:(e.angle||0)*180/Math.PI,front:e.colour,frontStyle:e.style,backStyle:'off',opacity:Math.round(e.alpha*100)}))})}const option=$('nativeSource').querySelector('option[value="portrait"]');option.disabled=false;option.textContent='MY PORTRAIT'},
+  exportState:()=>({source:current,objects:scene().objects.map(o=>({id:o.id,source:o.source,x:o.x,y:o.y,size:o.baseSize*o.scale/100,angle:o.angle*Math.PI/180,impressions:o.copies,opacity:o.opacity/100}))}),
   enter(preferred){chooseCanvas(preferred!==undefined?preferred:current)},plan,frame:()=>[scene().width,scene().height],pointerDown,pointerMove,pointerUp,paintSelection,
   wheel(e){if(targets().length){for(const o of targets())o.scale=Math.max(20,Math.min(240,o.scale-Math.sign(e.deltaY)*5));redraw()}},
   label:()=>title(current).toUpperCase(),status:()=>scene().objects.length+' GRAPHICS / '+(targets().length>1?'ALL '+targets().length+' SELECTED':active()?'SELECTED '+String(scene().objects.indexOf(active())+1).padStart(2,'0'):'CLICK TO SELECT')

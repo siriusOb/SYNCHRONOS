@@ -1,0 +1,10 @@
+.export-format-menu{position:fixed;z-index:10000;margin:0;padding:6px;border:1px solid #49606b;background:#091015;color:#e9f3f7;box-shadow:0 10px 30px #0006;font-family:var(--typewriter),Georgia,serif}
+.export-format-menu[hidden]{display:none!important}
+.export-format-menu button{display:block;text-align:left;width:100%;padding:12px 13px;border:0;background:transparent;color:inherit;font:400 12px/1.4 var(--typewriter),Georgia,serif;letter-spacing:.015em;min-height:57px}
+.export-format-menu button+button{border-top:1px solid #2b414d}
+.export-format-menu button:hover,.export-format-menu button:focus-visible{background:#152a35;color:#fff}
+.export-format-menu small{display:block;margin-top:4px;color:#a1b8c4;font:400 10px/1.5 var(--typewriter),Georgia,serif;letter-spacing:0}
+#exportDialog .dialog-bar{position:sticky;top:0;background:#091219;z-index:1}
+
+#exportDialog[data-format="receipt"] #exportPreview{width:min(100%,520px);max-height:none;background:#000;margin:0 auto}
+#exportDialog[data-format="receipt"] .export-actions{position:sticky;bottom:0;z-index:2;background:#091219;padding-top:12px;padding-bottom:4px;margin-top:12px}
