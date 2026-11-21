@@ -317,3 +317,8 @@ body:has(#lab.portrait-view:not([hidden])),body:has(#lab.portrait-view:not([hidd
 .book-leaf.left{clip-path:inset(-40px 0 -40px -40px)}
 .book-leaf.right{clip-path:inset(-40px -40px -40px 0)}
 .book.cover .book-leaf{clip-path:none}
+
+/* Keep the upper divider below IMPRESSIONS; remove the second rule above FRONT. */
+.native-controls #objectOptions>.impressions-row + .layer-setting{border-top:0;padding-top:0;margin-top:0}
+.native-controls #nativeShuffle{margin:18px 0 6px}
+#canvas{touch-action:none}
