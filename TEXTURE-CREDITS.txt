@@ -1,0 +1,3 @@
+Natural Paper — Mihaela Hinayon, Subtle Patterns / Transparent Textures.
+https://www.transparenttextures.com/patterns/natural-paper.png
+Used as a separate, low-opacity book paper overlay. The questionnaire uses the user's supplied parchment image.
