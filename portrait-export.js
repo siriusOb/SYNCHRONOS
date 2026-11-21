@@ -33,8 +33,9 @@
  }
  function describe(snapshot){
   const rows=new Map();
-  for(const item of snapshot.items){const id=family(item.source);if(!rows.has(id))rows.set(id,{family:id,...lookup(id),quantity:0,sources:new Set()});
+  for(const item of snapshot.items){const id=family(item.source);if(!rows.has(id))rows.set(id,{family:id,...lookup(id),quantity:0,sources:new Set(),frontSource:item.source,frontWeight:0});
    const row=rows.get(id);row.quantity+=item.impressions||1;
+   const weight=(item.size||1)**2*(item.opacity??1)*(item.impressions||1);if(weight>row.frontWeight){row.frontWeight=weight;row.frontSource=item.source;}
    const elements=item.id===undefined?[]:snapshot.elements.filter(e=>e.objectId===item.id);
    for(const source of elements.length?elements.map(e=>e.id):[item.source])row.sources.add(source);
   }
@@ -57,6 +58,14 @@
   if(!window.renderNative(canvas.getContext('2d'),canvas.width,canvas.height,false,black?{...snapshot,background:'#000000'}:snapshot))throw Error('The original artwork could not be rendered.');
   return canvas;
  }
+ // The inventory uses one overprinted grey thumbnail, not two adjacent images.
+ function inventoryStamp(k,row,x,y,w,h){
+  if(row.sources.length<2){window.renderNativeStamp(k,row.sources[0],x,y,w,h);return}
+  const front=row.sources.includes(row.frontSource)?row.frontSource:row.sources[0],rear=row.sources.filter(id=>id!==front);
+  const shift=Math.min(w,h)*.04;
+  for(const id of rear){k.save();k.globalAlpha=.38;window.renderNativeStamp(k,id,x+shift,y+shift,w-shift*2,h-shift*2);k.restore()}
+  k.save();k.globalAlpha=.92;window.renderNativeStamp(k,front,x-shift*.5,y-shift*.5,w-shift*2,h-shift*2);k.restore();
+ }
  function receipt(snapshot,metadata){
   const art=graphic(snapshot,true),measuring=document.createElement('canvas').getContext('2d');
   const artHeight=1000*snapshot.dimensions[1]/snapshot.dimensions[0],artBottom=290+artHeight;
@@ -77,8 +86,7 @@
   title.forEach((line,i)=>text(k,line,80,titleY+i*91,82));divider(k,ruleY);
   text(k,'GRAPHIC / CHARACTERISTIC',80,headerY,19,'#a8b1ac');text(k,'QTY',920,headerY,19,'#a8b1ac','right');
   for(const {row,names,traits,y}of rows){
-   const thumbWidth=row.sources.length>1?62:112;
-   row.sources.forEach((id,index)=>window.renderNativeStamp(k,id,80+index*65,y+7,thumbWidth,100));
+   inventoryStamp(k,row,80,y+7,112,100);
    text(k,row.sources.map(id=>String(id).padStart(2,'0')).join(' + '),240,y,19,'#a8b1ac');
    names.forEach((line,i)=>text(k,line,240,y+39+i*36,30));
    const traitY=y+39+names.length*36;
@@ -107,7 +115,8 @@
   menu.hidden=false;position();menu.querySelector('button').focus();
  }
  async function createExport(format){
-  if(preparing)return;const snapshot=window.nativeExportSnapshot?.(format);if(!snapshot)return;
+  // The large artwork always uses the canvas layout and opacity in both formats.
+  if(preparing)return;const snapshot=window.nativeExportSnapshot?.('graphic');if(!snapshot)return;
   const button=anchor||trigger(),label=button?.innerHTML;closeMenu();preparing=true;
   if(button){button.disabled=true;button.textContent='PREPARING PNG…'}
   try{
